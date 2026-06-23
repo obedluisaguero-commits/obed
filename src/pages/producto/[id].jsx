@@ -90,7 +90,7 @@ export default function ProductPage({ product, related }) {
           <div>
             <div className="relative h-96 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl overflow-hidden mb-3">
               {images.length > 0 ? (
-                <Image src={images[activeImg]} alt={product.Nombre} fill className="object-cover" sizes="(max-width:768px) 100vw, 50vw" />
+                <Image src={images[activeImg]} alt={product.Nombre} fill className="object-contain" sizes="(max-width:768px) 100vw, 50vw" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-6xl">👗</div>
               )}
@@ -110,7 +110,7 @@ export default function ProductPage({ product, related }) {
                       activeImg === i ? 'border-pink-500' : 'border-transparent'
                     }`}
                   >
-                    <Image src={img} alt={`${product.Nombre} ${i + 1}`} fill className="object-cover" sizes="80px" />
+                    <Image src={img} alt={`${product.Nombre} ${i + 1}`} fill className="object-contain" sizes="80px" />
                   </button>
                 ))}
               </div>
