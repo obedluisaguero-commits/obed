@@ -118,3 +118,67 @@ input:focus-visible {
   outline: 2px solid var(--emerald);
   outline-offset: 2px;
 }
+
+/* ── NAVBAR RESPONSIVE ─────────────────────────────────────────────── */
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Botón hamburguesa: oculto en escritorio, visible en móvil */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--black);
+  padding: 6px 8px;
+}
+
+/* Panel desplegable móvil: oculto por defecto */
+.nav-mobile {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+  z-index: 49;
+}
+
+/* En pantallas pequeñas: ocultar enlaces/buscador/WhatsApp de escritorio
+   y mostrar el botón hamburguesa + panel desplegable. */
+@media (max-width: 860px) {
+  .navbar { padding: 0 20px; }
+  .nav-links,
+  .nav-search-desktop,
+  .nav-wpp-desktop { display: none; }
+  .nav-toggle { display: inline-flex; align-items: center; }
+  .nav-mobile.open { display: block; }
+}
+
+/* Ajuste de tipografía del logo en celulares muy angostos */
+@media (max-width: 380px) {
+  .nav-logo span { font-size: 17px; }
+}
