@@ -58,9 +58,9 @@ export default function CategoryPage({ categoria, products }) {
         <div style={{width:'40px',height:'2px',background:meta.accent,marginTop:'14px'}} />
       </div>
 
-      <div style={{display:'flex',gap:'0',alignItems:'flex-start'}}>
+      <div className="category-layout">
         {/* Sidebar filtros */}
-        <aside style={{width:'220px',flexShrink:0,borderRight:'1px solid var(--border)',padding:'32px 24px',position:'sticky',top:'60px',minHeight:'60vh'}}>
+        <aside className="category-sidebar">
           <div style={{marginBottom:'28px'}}>
             <p style={{fontSize:'10px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)',marginBottom:'12px'}}>Subcategoría</p>
             <div style={{display:'flex',flexDirection:'column',gap:'2px'}}>
@@ -105,7 +105,7 @@ export default function CategoryPage({ categoria, products }) {
         {/* Grid de productos */}
         <main style={{flex:1,padding:'32px'}}>
           {filtered.length > 0 ? (
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1px',background:'var(--border)'}}>
+            <div className="category-grid">
               {filtered.map(p => {
                 const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
                 const price = hasDiscount ? p.PrecioOferta : p.Precio

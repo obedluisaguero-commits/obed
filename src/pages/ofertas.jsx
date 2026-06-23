@@ -40,7 +40,7 @@ export default function OfertasPage({ offers }) {
         </div>
 
         {filtered.length > 0 ? (
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1px',background:'var(--border)'}}>
+          <div className="product-grid">
             {filtered.map(p => {
               const discount = Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100)
               const wppMsg = encodeURIComponent(`Hola Sweet Raquel 👋 Me interesa esta oferta:\n\n*${p.Nombre}*\nPrecio oferta: S/ ${p.PrecioOferta}`)
