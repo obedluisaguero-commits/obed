@@ -49,22 +49,32 @@ export default function OfertasPage({ offers }) {
                   onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
                   onMouseLeave={e=>e.currentTarget.style.background='#fff'}
                 >
-                  <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden'}}>
-                    {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'cover'}} sizes="25vw" /> : <span>👗</span>}
-                    <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>
-                  </div>
+                  <Link href={`/producto/${p.ID}`} style={{textDecoration:'none',display:'block'}}>
+                    <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden',cursor:'pointer'}}>
+                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'cover'}} sizes="25vw" /> : <span>👗</span>}
+                      <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>
+                    </div>
+                  </Link>
                   <div style={{padding:'14px'}}>
                     <p style={{fontSize:'10px',color:'var(--light)',fontWeight:500,letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'4px'}}>{p.Categoria}</p>
-                    <p style={{fontSize:'13px',fontWeight:500,color:'var(--black)',marginBottom:'8px'}} className="line-clamp-2">{p.Nombre}</p>
+                    <Link href={`/producto/${p.ID}`} style={{textDecoration:'none'}}>
+                      <p style={{fontSize:'13px',fontWeight:500,color:'var(--black)',marginBottom:'8px',cursor:'pointer'}} className="line-clamp-2">{p.Nombre}</p>
+                    </Link>
                     <div style={{display:'flex',alignItems:'baseline',gap:'8px',marginBottom:'10px'}}>
                       <span style={{fontSize:'15px',fontWeight:700,color:'var(--black)'}}>S/ {p.PrecioOferta}</span>
                       <span style={{fontSize:'11px',color:'var(--light)',textDecoration:'line-through'}}>S/ {p.Precio}</span>
                     </div>
-                    <a href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`} target="_blank" rel="noopener noreferrer"
-                      style={{display:'block',textAlign:'center',textDecoration:'none',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',transition:'background .15s'}}
-                      onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
-                      onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-                    >Aprovechar oferta</a>
+                    <div style={{display:'flex',gap:'6px'}}>
+                      <a href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`} target="_blank" rel="noopener noreferrer"
+                        style={{flex:1,textAlign:'center',textDecoration:'none',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',transition:'background .15s'}}
+                        onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
+                        onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
+                      >Aprovechar oferta</a>
+                      <Link href={`/producto/${p.ID}`}
+                        style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'9px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
+                        aria-label={`Ver detalle de ${p.Nombre}`}
+                      >→</Link>
+                    </div>
                   </div>
                 </div>
               )
