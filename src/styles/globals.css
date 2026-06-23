@@ -182,3 +182,108 @@ input:focus-visible {
 @media (max-width: 380px) {
   .nav-logo span { font-size: 17px; }
 }
+
+/* ── GRILLAS RESPONSIVE ────────────────────────────────────────────── */
+
+/* Grilla de tarjetas de producto (inicio, productos, ofertas, búsqueda) */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px)  { .product-grid { grid-template-columns: 1fr; } }
+
+/* Grillas de bloques informativos (beneficios, métricas) */
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 768px) { .grid-stats { grid-template-columns: repeat(2, 1fr); } }
+
+/* Beneficios sin separador de fondo (usa borde propio) */
+.grid-benefits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 768px) { .grid-benefits { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px) { .grid-benefits { grid-template-columns: 1fr; } }
+
+/* Grilla de categorías de la home (3 bloques) */
+.grid-cats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 768px) { .grid-cats { grid-template-columns: 1fr; } }
+
+/* Grilla de testimonios y contacto (3 columnas) */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+
+/* Grilla de 3 columnas con separador (contacto) */
+.grid-3-sep {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 560px) { .grid-3-sep { grid-template-columns: 1fr; } }
+
+/* Hero de la home: en móvil se apila verticalmente */
+@media (max-width: 900px) {
+  .hero { flex-direction: column; align-items: flex-start !important; gap: 32px !important; }
+  .hero-cards { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
+}
+
+/* ── PÁGINA DE CATEGORÍA: layout con filtros ───────────────────────── */
+.category-layout {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+}
+.category-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 32px 24px;
+  position: sticky;
+  top: 60px;
+  min-height: 60vh;
+}
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 900px) {
+  .category-layout { flex-direction: column; }
+  .category-sidebar {
+    width: 100%;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: 0;
+    padding: 20px 32px;
+  }
+  .category-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 440px) {
+  .category-grid { grid-template-columns: 1fr; }
+}
+
+/* Reduce padding lateral general de secciones en móvil */
+@media (max-width: 560px) {
+  .section-pad { padding-left: 20px !important; padding-right: 20px !important; }
+}

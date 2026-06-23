@@ -18,7 +18,7 @@ export default function ContactoPage() {
           ¿Dudas sobre tallas, stock o envíos? Escríbenos y respondemos en minutos.
         </p>
 
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1px',background:'var(--border)',marginBottom:'40px'}}>
+        <div className="grid-3-sep" style={{marginBottom:'40px'}}>
           {[
             { icon:'◉', label:'WhatsApp', detail:'+51 999 999 999', href:`https://wa.me/${WPP_NUMBER}` },
             { icon:'◈', label:'Instagram', detail:'@sweetraquel', href:'https://instagram.com/sweetraquel' },

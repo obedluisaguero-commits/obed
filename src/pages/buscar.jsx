@@ -101,7 +101,7 @@ export default function BuscarPage() {
         )}
 
         {!loading && !error && results.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1px', background: 'var(--border)' }}>
+          <div className="product-grid">
             {results.map((p) => {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio

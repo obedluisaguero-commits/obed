@@ -141,7 +141,7 @@ export default function Home({ featuredProducts = [] }) {
       </Head>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section style={{background:'var(--anthracite)',color:'#fff',padding:'72px 32px',display:'flex',alignItems:'center',gap:'48px',position:'relative',overflow:'hidden'}}>
+      <section className="hero section-pad" style={{background:'var(--anthracite)',color:'#fff',padding:'72px 32px',display:'flex',alignItems:'center',gap:'48px',position:'relative',overflow:'hidden'}}>
         <div style={{flex:1,zIndex:1,maxWidth:'480px'}}>
           <div style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'20px',display:'flex',alignItems:'center',gap:'10px'}}>
             <span style={{width:'24px',height:'1px',background:'var(--emerald-mist)',display:'inline-block'}} />
@@ -162,7 +162,7 @@ export default function Home({ featuredProducts = [] }) {
         </div>
 
         {/* Mini cards decorativas */}
-        <div style={{display:'flex',gap:'14px',alignItems:'center',zIndex:1,flexShrink:0}}>
+        <div className="hero-cards" style={{display:'flex',gap:'14px',alignItems:'center',zIndex:1,flexShrink:0}}>
           {[{e:'👗',n:'Vestido Floral',p:65,o:90},{e:'👔',n:'Conjunto Casual',p:120,o:150,hl:true},{e:'🧒',n:'Set Niños',p:45,o:60}].map(c => (
             <div key={c.n} style={{
               background: c.hl ? 'rgba(11,122,94,.15)' : 'rgba(255,255,255,.05)',
@@ -180,7 +180,7 @@ export default function Home({ featuredProducts = [] }) {
       </section>
 
       {/* ── BARRA DE BENEFICIOS ───────────────────────────────────────────── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',borderBottom:'1px solid var(--border)'}}>
+      <div className="grid-benefits">
         {[['↗','Envíos a todo Perú','Todas las regiones'],['◈','Pagos seguros','Yape · Plin · Transferencia'],['↺','Cambios en 7 días','Sin costo adicional'],['◉','Stock en tiempo real','Disponibilidad actualizada']].map(([icon,t,s])=>(
           <div key={t} style={{padding:'18px 16px',textAlign:'center',borderRight:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px'}}>
             <span style={{color:'var(--emerald)',fontSize:'18px',flexShrink:0}}>{icon}</span>
@@ -199,7 +199,7 @@ export default function Home({ featuredProducts = [] }) {
           <h2 style={{fontSize:'32px',fontWeight:700,letterSpacing:'-1px',color:'var(--black)'}}>Explora por categoría</h2>
           <p style={{fontSize:'13px',color:'var(--mid)',marginTop:'6px',fontWeight:300}}>Todo lo que tu familia necesita en un solo lugar</p>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1px',background:'var(--border)'}}>
+        <div className="grid-cats">
           {CATEGORIES.map(cat => (
             <Link key={cat.href} href={cat.href} style={{textDecoration:'none',background:'#fff',padding:'36px 28px',cursor:'pointer',position:'relative',transition:'background .15s',display:'block'}}
               onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
@@ -250,7 +250,7 @@ export default function Home({ featuredProducts = [] }) {
         </div>
 
         {filtered.length > 0 ? (
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1px',background:'var(--border)'}}>
+          <div className="product-grid">
             {filtered.slice(0,8).map(p => <ProductCard key={p.ID} product={p} />)}
           </div>
         ) : (
@@ -287,7 +287,7 @@ export default function Home({ featuredProducts = [] }) {
       </section>
 
       {/* ── MÉTRICAS ─────────────────────────────────────────────────────── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1px',background:'var(--border)'}}>
+      <div className="grid-stats">
         {[['99%','Satisfacción','Clientes que vuelven a comprar'],['24h','Respuesta','Atención WhatsApp todos los días'],['7d','Cambios','Sin costo por talla incorrecta'],['PE','Todo el Perú','Envíos a todas las regiones']].map(([n,t,d])=>(
           <div key={t} style={{background:'var(--surface)',padding:'32px 24px',textAlign:'center'}}>
             <p style={{fontSize:'30px',fontWeight:700,color:'var(--emerald)',letterSpacing:'-1px',marginBottom:'6px'}}>{n}</p>
@@ -303,7 +303,7 @@ export default function Home({ featuredProducts = [] }) {
           <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald)',marginBottom:'10px'}}>Testimonios</p>
           <h2 style={{fontSize:'32px',fontWeight:700,letterSpacing:'-1px',color:'var(--black)'}}>Lo que dicen nuestras clientas</h2>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
+        <div className="grid-3">
           {[
             {q:'"Compré un vestido para mi hija y llegó perfecto. La calidad es increíble para el precio. Ya pedí tres cosas más."',n:'María P.',l:'Huancayo, Junín'},
             {q:'"Los polos de mi esposo quedaron perfectos. El trato por WhatsApp fue muy amable y el delivery súper rápido."',n:'Lucía R.',l:'Lima, Lima'},
