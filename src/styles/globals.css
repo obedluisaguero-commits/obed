@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --black:          #0F0F0F;
+  --anthracite:     #1C1C1E;
+  --dark:           #2C2C2E;
+  --mid:            #636366;
+  --light:          #AEAEB2;
+  --border:         #E5E5EA;
+  --surface:        #F5F5F7;
+  --white:          #FFFFFF;
+  --emerald:        #0B7A5E;
+  --emerald-dark:   #065444;
+  --emerald-light:  #E8F5F1;
+  --emerald-mist:   #A7D8C8;
+  --navy:           #0D3B6E;
+  --sale:           #C0392B;
+  --warn:           #B45309;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Helvetica Neue', Arial, system-ui, sans-serif;
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+
+.line-clamp-1 { overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1 }
+.line-clamp-2 { overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2 }
+
+/* Botón primario — verde esmeralda */
+.btn-primary {
+  background: var(--emerald);
+  color: #fff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--emerald-dark); }
+
+/* Botón negro — acción principal secundaria */
+.btn-dark {
+  background: var(--black);
+  color: #fff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-dark:hover { background: var(--emerald); }
+
+/* Botón outline — acciones terciarias */
+.btn-outline {
+  background: transparent;
+  color: var(--dark);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btn-outline:hover { border-color: var(--dark); }
+
+/* Badge NUEVO */
+.badge-new {
+  background: var(--black);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Badge OFERTA */
+.badge-sale {
+  background: var(--sale);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Card premium */
+.card-premium {
+  background: var(--white);
+  border: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.card-premium:hover { background: var(--surface); }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 2px;
+}
