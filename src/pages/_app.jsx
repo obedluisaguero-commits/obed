@@ -18,20 +18,25 @@ function Topbar() {
 
 function Navbar() {
   const [search, setSearch] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
+
   const handleSearch = (e) => {
     e.preventDefault()
     if (search.trim()) window.location.href = `/buscar?q=${encodeURIComponent(search)}`
   }
 
+  const wppHref = `https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent('Hola Sweet Raquel 👋 quiero información sobre sus productos')}`
+
   return (
-    <nav style={{background:'#fff',borderBottom:'1px solid var(--border)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:50}}>
-      <Link href="/" style={{textDecoration:'none'}}>
+    <nav className="navbar">
+      <Link href="/" className="nav-logo" style={{textDecoration:'none'}} onClick={() => setMenuOpen(false)}>
         <span style={{fontSize:'20px',fontWeight:700,color:'var(--black)',letterSpacing:'-1px'}}>
           Sweet Raquel <span style={{fontWeight:300,color:'var(--mid)'}}>/ MODA</span>
         </span>
       </Link>
 
-      <ul style={{display:'flex',gap:'28px',listStyle:'none',margin:0,padding:0}}>
+      {/* Enlaces de escritorio */}
+      <ul className="nav-links">
         {NAV_LINKS.map(([href, label]) => (
           <li key={href}>
             <Link href={href} style={{textDecoration:'none',color:'var(--dark)',fontSize:'12px',fontWeight:500,letterSpacing:'.3px',textTransform:'uppercase',transition:'color .15s'}}
@@ -43,21 +48,64 @@ function Navbar() {
       </ul>
 
       <div style={{display:'flex',gap:'10px',alignItems:'center'}}>
-        <form onSubmit={handleSearch} style={{display:'flex'}}>
+        <form onSubmit={handleSearch} className="nav-search-desktop" style={{display:'flex'}}>
           <input
             value={search}
             onChange={e=>setSearch(e.target.value)}
             placeholder="Buscar..."
+            aria-label="Buscar productos"
             style={{border:'1px solid var(--border)',borderRadius:'4px',padding:'7px 14px',fontSize:'11px',color:'var(--dark)',background:'var(--surface)',width:'160px',letterSpacing:'.3px'}}
           />
         </form>
         <a
-          href={`https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent('Hola Sweet Raquel 👋 quiero información sobre sus productos')}`}
+          href={wppHref}
           target="_blank" rel="noopener noreferrer"
-          className="btn-primary"
+          className="btn-primary nav-wpp-desktop"
           style={{textDecoration:'none',display:'inline-block'}}
         >
           WhatsApp
+        </a>
+
+        {/* Botón hamburguesa (solo móvil) */}
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(o => !o)}
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
+      </div>
+
+      {/* Panel desplegable (solo móvil) */}
+      <div className={`nav-mobile ${menuOpen ? 'open' : ''}`}>
+        <form onSubmit={handleSearch} style={{display:'flex',marginBottom:'16px'}}>
+          <input
+            value={search}
+            onChange={e=>setSearch(e.target.value)}
+            placeholder="Buscar productos..."
+            aria-label="Buscar productos"
+            style={{flex:1,border:'1px solid var(--border)',borderRadius:'4px',padding:'10px 14px',fontSize:'13px',color:'var(--dark)',background:'var(--surface)',letterSpacing:'.3px'}}
+          />
+        </form>
+        <ul style={{display:'flex',flexDirection:'column',gap:'2px',listStyle:'none',margin:0,padding:0,marginBottom:'16px'}}>
+          {NAV_LINKS.map(([href, label]) => (
+            <li key={href}>
+              <Link href={href} onClick={() => setMenuOpen(false)}
+                style={{display:'block',textDecoration:'none',color:'var(--dark)',fontSize:'14px',fontWeight:500,letterSpacing:'.3px',textTransform:'uppercase',padding:'12px 8px',borderBottom:'1px solid var(--border)'}}
+              >{label}</Link>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={wppHref}
+          target="_blank" rel="noopener noreferrer"
+          className="btn-primary"
+          style={{textDecoration:'none',display:'block',textAlign:'center'}}
+          onClick={() => setMenuOpen(false)}
+        >
+          Contactar por WhatsApp
         </a>
       </div>
     </nav>
