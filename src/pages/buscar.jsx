@@ -51,7 +51,7 @@ export default function BuscarPage() {
   return (
     <>
       <Head>
-        <title>{q ? `Buscar: ${q} | Sweet Raquel` : 'Buscar | Sweet Raquel'}</title>
+        <title>{q ? `Buscar: ${q} | monky's` : "Buscar | monky's"}</title>
         <meta name="robots" content="noindex, follow" />
       </Head>
 
@@ -106,7 +106,7 @@ export default function BuscarPage() {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio
               const discount = hasDiscount ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0
-              const wppMsg = encodeURIComponent(`Hola Sweet Raquel 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
+              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
               return (
                 <div key={p.ID} style={{ background: '#fff', transition: 'background .15s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface)')}

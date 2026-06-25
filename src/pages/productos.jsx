@@ -21,9 +21,9 @@ export default function ProductosPage({ products }) {
   return (
     <>
       <Head>
-        <title>Todos los productos | Sweet Raquel</title>
-        <meta name="description" content="Catálogo completo de Sweet Raquel: moda para mujer, hombre y niños. Envíos a todo Perú." />
-        <link rel="canonical" href="https://sweetraquel.pe/productos" />
+        <title>Todos los productos | monky&apos;s</title>
+        <meta name="description" content="Catálogo completo de monky's: moda para mujer, hombre y niños. Envíos a todo Perú." />
+        <link rel="canonical" href="https://monkysstore.pe/productos" />
       </Head>
 
       <div style={{ borderBottom: '1px solid var(--border)', padding: '40px 32px 32px' }}>
@@ -57,7 +57,7 @@ export default function ProductosPage({ products }) {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio
               const discount = hasDiscount ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0
-              const wppMsg = encodeURIComponent(`Hola Sweet Raquel 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
+              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
               return (
                 <div key={p.ID} style={{ background: '#fff', transition: 'background .15s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface)')}

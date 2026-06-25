@@ -1,4 +1,4 @@
-// pages/[categoria]/index.jsx — Sweet Raquel · Estética premium
+// pages/[categoria]/index.jsx — monky's · Estética premium
 import { useState, useMemo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -39,9 +39,9 @@ export default function CategoryPage({ categoria, products }) {
   return (
     <>
       <Head>
-        <title>{`${meta.label} | Sweet Raquel`}</title>
-        <meta name="description" content={`Ropa de ${meta.label.toLowerCase()} en Sweet Raquel: ${meta.subcats.join(', ')}. Envíos a todo Perú.`} />
-        <link rel="canonical" href={`https://sweetraquel.pe/${categoria}`} />
+        <title>{`${meta.label} | monky's`}</title>
+        <meta name="description" content={`Ropa de ${meta.label.toLowerCase()} en monky's: ${meta.subcats.join(', ')}. Envíos a todo Perú.`} />
+        <link rel="canonical" href={`https://monkysstore.pe/${categoria}`} />
       </Head>
 
       {/* Header de categoría */}
@@ -110,7 +110,7 @@ export default function CategoryPage({ categoria, products }) {
                 const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
                 const price = hasDiscount ? p.PrecioOferta : p.Precio
                 const discount = hasDiscount ? Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100) : 0
-                const wppMsg = encodeURIComponent(`Hola Sweet Raquel 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
+                const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
                 return (
                   <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
                     onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}

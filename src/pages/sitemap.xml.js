@@ -1,7 +1,7 @@
 // pages/sitemap.xml.js — Genera sitemap.xml dinámico en cada build/ISR
 import { fetchProducts } from '../lib/sheets'
 
-const BASE_URL = 'https://sweetraquel.pe'
+const BASE_URL = 'https://monkysstore.pe'
 
 function generateSiteMap(products) {
   const staticPages = ['', '/mujer', '/hombre', '/ninos', '/ofertas', '/contacto']

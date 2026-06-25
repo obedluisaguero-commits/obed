@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://sweetraquel.pe/sitemap.xml
+Sitemap: https://monkysstore.pe/sitemap.xml
