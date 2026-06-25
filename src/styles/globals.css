@@ -5,18 +5,22 @@
 @tailwind utilities;
 
 :root {
-  --black:          #0F0F0F;
-  --anthracite:     #1C1C1E;
-  --dark:           #2C2C2E;
-  --mid:            #636366;
-  --light:          #AEAEB2;
-  --border:         #E5E5EA;
-  --surface:        #F5F5F7;
+  /* Paleta monky's — verde oscuro, dorado y crema */
+  --black:          #15211C;  /* casi negro con matiz verde (texto/títulos) */
+  --anthracite:     #173A32;  /* verde marca (hero, footer, topbar) */
+  --dark:           #243A33;
+  --mid:            #5E6F68;
+  --light:          #9FB0A8;
+  --border:         #E4E0D4;  /* gris cálido (combina con crema) */
+  --surface:        #F5F2EA;  /* crema muy claro de fondo */
   --white:          #FFFFFF;
-  --emerald:        #0B7A5E;
-  --emerald-dark:   #065444;
-  --emerald-light:  #E8F5F1;
-  --emerald-mist:   #A7D8C8;
+  --emerald:        #173A32;  /* verde marca (botones/acentos primarios) */
+  --emerald-dark:   #0F2A24;  /* hover de botones verdes */
+  --emerald-light:  #E9F0EC;
+  --emerald-mist:   #9FB5AC;  /* verde salvia (acento sobre fondos oscuros) */
+  --gold:           #C99A3C;  /* dorado (acento de marca) */
+  --gold-dark:      #A87E2C;
+  --cream:          #E9DFC9;
   --navy:           #0D3B6E;
   --sale:           #C0392B;
   --warn:           #B45309;

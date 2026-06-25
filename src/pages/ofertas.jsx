@@ -1,4 +1,4 @@
-// pages/ofertas.jsx — Sweet Raquel · Premium
+// pages/ofertas.jsx — monky's · Premium
 import { useState, useMemo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -15,9 +15,9 @@ export default function OfertasPage({ offers }) {
   return (
     <>
       <Head>
-        <title>Ofertas | Sweet Raquel</title>
-        <meta name="description" content="Hasta 50% de descuento en ropa para mujer, hombre y niños. Ofertas por tiempo limitado en Sweet Raquel." />
-        <link rel="canonical" href="https://sweetraquel.pe/ofertas" />
+        <title>Ofertas | monky&apos;s</title>
+        <meta name="description" content="Hasta 50% de descuento en ropa para mujer, hombre y niños. Ofertas por tiempo limitado en monky's." />
+        <link rel="canonical" href="https://monkysstore.pe/ofertas" />
       </Head>
 
       <div style={{background:'var(--black)',padding:'48px 32px',textAlign:'center'}}>
@@ -43,7 +43,7 @@ export default function OfertasPage({ offers }) {
           <div className="product-grid">
             {filtered.map(p => {
               const discount = Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100)
-              const wppMsg = encodeURIComponent(`Hola Sweet Raquel 👋 Me interesa esta oferta:\n\n*${p.Nombre}*\nPrecio oferta: S/ ${p.PrecioOferta}`)
+              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa esta oferta:\n\n*${p.Nombre}*\nPrecio oferta: S/ ${p.PrecioOferta}`)
               return (
                 <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
                   onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}

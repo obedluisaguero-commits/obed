@@ -1,8 +1,9 @@
-// pages/_app.jsx — Layout global · Sweet Raquel · Estética premium internacional
+// pages/_app.jsx — Layout global · monky's · Estética premium internacional
 import '../styles/globals.css'
 import { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
+import Image from 'next/image'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
 const NAV_LINKS = [['/', 'Inicio'],['/mujer','Mujer'],['/hombre','Hombre'],['/ninos','Niños'],['/ofertas','Ofertas'],['/contacto','Contacto']]
@@ -25,13 +26,17 @@ function Navbar() {
     if (search.trim()) window.location.href = `/buscar?q=${encodeURIComponent(search)}`
   }
 
-  const wppHref = `https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent('Hola Sweet Raquel 👋 quiero información sobre sus productos')}`
+  const wppHref = `https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent("Hola monky's 👋 quiero información sobre sus productos")}`
 
   return (
     <nav className="navbar">
-      <Link href="/" className="nav-logo" style={{textDecoration:'none'}} onClick={() => setMenuOpen(false)}>
-        <span style={{fontSize:'20px',fontWeight:700,color:'var(--black)',letterSpacing:'-1px'}}>
-          Sweet Raquel <span style={{fontWeight:300,color:'var(--mid)'}}>/ MODA</span>
+      <Link href="/" className="nav-logo" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:'10px'}} onClick={() => setMenuOpen(false)}>
+        <Image src="/monkys-simbolo.svg" alt="monky&apos;s STORE" width={36} height={36} priority />
+        <span style={{display:'flex',flexDirection:'column',lineHeight:1}}>
+          <span style={{fontSize:'20px',fontWeight:600,letterSpacing:'-.5px',color:'var(--anthracite)'}}>
+            monky<span style={{color:'var(--gold)'}}>&apos;s</span>
+          </span>
+          <span style={{fontSize:'9px',fontWeight:500,letterSpacing:'4px',color:'var(--mid)',marginTop:'2px'}}>STORE</span>
         </span>
       </Link>
 
@@ -122,9 +127,15 @@ function Footer() {
     <footer style={{background:'var(--anthracite)',padding:'48px 32px 24px'}}>
       <div style={{display:'flex',gap:'48px',marginBottom:'40px'}}>
         <div style={{flex:1.5}}>
-          <p style={{fontSize:'22px',fontWeight:700,color:'#fff',letterSpacing:'-1px',marginBottom:'8px'}}>
-            Sweet Raquel <span style={{fontWeight:300,color:'rgba(255,255,255,.35)'}}>/ MODA</span>
-          </p>
+          <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'12px'}}>
+            <Image src="/monkys-simbolo.svg" alt="monky&apos;s STORE" width={40} height={40} />
+            <span style={{display:'flex',flexDirection:'column',lineHeight:1}}>
+              <span style={{fontSize:'22px',fontWeight:600,letterSpacing:'-.5px',color:'#fff'}}>
+                monky<span style={{color:'var(--gold)'}}>&apos;s</span>
+              </span>
+              <span style={{fontSize:'9px',fontWeight:500,letterSpacing:'4px',color:'var(--emerald-mist)',marginTop:'2px'}}>STORE</span>
+            </span>
+          </div>
           <p style={{fontSize:'11px',color:'rgba(255,255,255,.35)',lineHeight:1.6,fontWeight:300,maxWidth:'200px'}}>
             Moda para toda la familia peruana. Calidad, precio y confianza desde Huancayo.
           </p>
@@ -145,7 +156,7 @@ function Footer() {
       </div>
       <div style={{borderTop:'1px solid rgba(255,255,255,.08)',paddingTop:'20px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <span style={{fontSize:'10px',color:'rgba(255,255,255,.25)',letterSpacing:'.3px'}}>
-          © {new Date().getFullYear()} Sweet Raquel · Todos los derechos reservados · Huancayo, Perú
+          © {new Date().getFullYear()} monky&apos;s · Todos los derechos reservados · Huancayo, Perú
         </span>
         <div style={{display:'flex',gap:'6px'}}>
           {['Yape','Plin','BCP','Visa'].map(p => (
@@ -161,7 +172,7 @@ function WhatsAppFloat() {
   return (
     <div style={{background:'var(--surface)',borderTop:'1px solid var(--border)',padding:'12px 32px',display:'flex',justifyContent:'flex-end'}}>
       <a
-        href={`https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent('Hola Sweet Raquel 👋 Quiero información sobre sus productos')}`}
+        href={`https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent("Hola monky's 👋 Quiero información sobre sus productos")}`}
         target="_blank" rel="noopener noreferrer"
         className="btn-primary"
         style={{textDecoration:'none',display:'inline-flex',alignItems:'center',gap:'8px'}}
@@ -179,7 +190,7 @@ export default function App({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="utf-8" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/monkys-simbolo.svg" />
       </Head>
       <Topbar />
       <Navbar />

@@ -1,4 +1,4 @@
-// pages/index.jsx — Sweet Raquel · Estética premium internacional
+// pages/index.jsx — monky's · Estética premium internacional
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -9,9 +9,9 @@ const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
 const WPP_BASE = `https://wa.me/${WPP_NUMBER}?text=`
 
 const SEO = {
-  title: 'Sweet Raquel | Moda para toda la familia – Huancayo, Perú',
+  title: "monky's | Moda para toda la familia – Huancayo, Perú",
   description: 'Tienda de ropa moderna para mujer, hombre y niños. Vestidos, blusas, polos, casacas y más. Precios competitivos, envíos a todo Perú.',
-  canonical: 'https://sweetraquel.pe',
+  canonical: 'https://monkysstore.pe',
 }
 
 const CATEGORIES = [
@@ -31,7 +31,7 @@ function ProductCard({ product }) {
   const stockLow = product.Stock > 0 && product.Stock <= 5
 
   const wppMsg = encodeURIComponent(
-    `Hola Sweet Raquel 👋 Me interesa:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nPrecio: S/ ${price}\nTalla: ${product.Talla}\n\n¿Está disponible?`
+    `Hola monky's 👋 Me interesa:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nPrecio: S/ ${price}\nTalla: ${product.Talla}\n\n¿Está disponible?`
   )
 
   return (
@@ -134,7 +134,7 @@ export default function Home({ featuredProducts = [] }) {
         <meta property="og:type" content="website" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           '@context':'https://schema.org','@type':'ClothingStore',
-          name:'Sweet Raquel', url: SEO.canonical,
+          name:"monky's", url: SEO.canonical,
           address:{'@type':'PostalAddress',addressLocality:'Huancayo',addressRegion:'Junín',addressCountry:'PE'},
           openingHours:'Mo-Sa 09:00-20:00'
         })}} />

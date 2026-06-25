@@ -39,15 +39,15 @@ export default function ProductPage({ product, related }) {
   const discount = hasDiscount ? Math.round(((product.Precio - product.PrecioOferta) / product.Precio) * 100) : 0
 
   const wppMsg = encodeURIComponent(
-    `Hola Sweet Raquel 👋 Quiero comprar:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nTalla: ${product.Talla}\nColor: ${product.Color}\nPrecio: S/ ${price}\n\n¿Me confirman disponibilidad?`
+    `Hola monky's 👋 Quiero comprar:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nTalla: ${product.Talla}\nColor: ${product.Color}\nPrecio: S/ ${price}\n\n¿Me confirman disponibilidad?`
   )
 
   return (
     <>
       <Head>
-        <title>{`${product.Nombre} | Sweet Raquel`}</title>
+        <title>{`${product.Nombre} | monky's`}</title>
         <meta name="description" content={product.Descripcion?.slice(0, 155) || product.Nombre} />
-        <link rel="canonical" href={`https://sweetraquel.pe/producto/${product.ID}`} />
+        <link rel="canonical" href={`https://monkysstore.pe/producto/${product.ID}`} />
         <meta property="og:title" content={product.Nombre} />
         <meta property="og:image" content={product.Imagen1} />
         <meta property="og:type" content="product" />
@@ -61,13 +61,13 @@ export default function ProductPage({ product, related }) {
               description: product.Descripcion,
               image: images,
               sku: product.Codigo,
-              brand: { '@type': 'Brand', name: product.Marca || 'Sweet Raquel' },
+              brand: { '@type': 'Brand', name: product.Marca || "monky's" },
               offers: {
                 '@type': 'Offer',
                 priceCurrency: 'PEN',
                 price,
                 availability: liveStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                url: `https://sweetraquel.pe/producto/${product.ID}`,
+                url: `https://monkysstore.pe/producto/${product.ID}`,
               },
             }),
           }}
@@ -76,9 +76,9 @@ export default function ProductPage({ product, related }) {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <nav className="text-xs text-gray-400 font-poppins mb-6 flex items-center gap-2 flex-wrap">
-          <Link href="/" className="hover:text-pink-500">Inicio</Link>
+          <Link href="/" className="hover:text-[#173A32]">Inicio</Link>
           <span>/</span>
-          <Link href={`/${slugCategoria(product.Categoria)}`} className="hover:text-pink-500 capitalize">
+          <Link href={`/${slugCategoria(product.Categoria)}`} className="hover:text-[#173A32] capitalize">
             {product.Categoria}
           </Link>
           <span>/</span>
@@ -88,14 +88,14 @@ export default function ProductPage({ product, related }) {
         <div className="grid md:grid-cols-2 gap-10">
           {/* Galería */}
           <div>
-            <div className="relative h-96 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl overflow-hidden mb-3">
+            <div className="relative h-96 bg-gradient-to-br from-[#F5F2EA] to-[#E9DFC9] rounded-2xl overflow-hidden mb-3">
               {images.length > 0 ? (
                 <Image src={images[activeImg]} alt={product.Nombre} fill className="object-contain" sizes="(max-width:768px) 100vw, 50vw" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-6xl">👗</div>
               )}
               {hasDiscount && (
-                <span className="absolute top-3 left-3 bg-pink-600 text-white text-xs font-bold font-poppins px-3 py-1 rounded-full">
+                <span className="absolute top-3 left-3 bg-[#173A32] text-white text-xs font-bold font-poppins px-3 py-1 rounded-full">
                   -{discount}% OFF
                 </span>
               )}
@@ -107,7 +107,7 @@ export default function ProductPage({ product, related }) {
                     key={i}
                     onClick={() => setActiveImg(i)}
                     className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 ${
-                      activeImg === i ? 'border-pink-500' : 'border-transparent'
+                      activeImg === i ? 'border-[#C99A3C]' : 'border-transparent'
                     }`}
                   >
                     <Image src={img} alt={`${product.Nombre} ${i + 1}`} fill className="object-contain" sizes="80px" />
@@ -119,7 +119,7 @@ export default function ProductPage({ product, related }) {
 
           {/* Info */}
           <div>
-            <p className="text-xs text-pink-500 font-poppins uppercase tracking-wide font-medium mb-2">
+            <p className="text-xs text-[#173A32] font-poppins uppercase tracking-wide font-medium mb-2">
               {product.Categoria} · {product.Subcategoria} {product.Marca && `· ${product.Marca}`}
             </p>
             <h1 className="font-playfair text-3xl font-bold text-slate-900 mb-3">{product.Nombre}</h1>
@@ -132,7 +132,7 @@ export default function ProductPage({ product, related }) {
             </div>
 
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-3xl font-bold text-pink-600 font-poppins">S/ {price}</span>
+              <span className="text-3xl font-bold text-[#C99A3C] font-poppins">S/ {price}</span>
               {hasDiscount && <span className="text-lg text-gray-400 line-through font-poppins">S/ {product.Precio}</span>}
             </div>
 
@@ -164,7 +164,7 @@ export default function ProductPage({ product, related }) {
               target="_blank"
               rel="noopener noreferrer"
               className={`block text-center font-poppins font-semibold py-3.5 rounded-full transition-colors ${
-                liveStock > 0 ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-gray-100 text-gray-400 pointer-events-none'
+                liveStock > 0 ? 'bg-[#173A32] text-white hover:bg-[#0F2A24]' : 'bg-gray-100 text-gray-400 pointer-events-none'
               }`}
             >
               {liveStock > 0 ? '💬 Comprar por WhatsApp' : 'Sin stock disponible'}
@@ -189,9 +189,9 @@ export default function ProductPage({ product, related }) {
                   <Link
                     key={p.ID}
                     href={`/producto/${p.ID}`}
-                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-pink-200 hover:shadow-lg transition-all"
+                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#9FB5AC] hover:shadow-lg transition-all"
                   >
-                    <div className="relative h-40 bg-gradient-to-br from-pink-50 to-pink-100">
+                    <div className="relative h-40 bg-gradient-to-br from-[#F5F2EA] to-[#E9DFC9]">
                       {p.Imagen1 ? (
                         <Image src={p.Imagen1} alt={p.Nombre} fill className="object-cover" sizes="200px" />
                       ) : (
@@ -200,7 +200,7 @@ export default function ProductPage({ product, related }) {
                     </div>
                     <div className="p-3">
                       <p className="text-xs text-slate-700 font-medium line-clamp-1 mb-1">{p.Nombre}</p>
-                      <p className="text-sm font-bold text-pink-600 font-poppins">S/ {rPrice}</p>
+                      <p className="text-sm font-bold text-[#C99A3C] font-poppins">S/ {rPrice}</p>
                     </div>
                   </Link>
                 )

@@ -1,4 +1,4 @@
-// pages/contacto.jsx — Sweet Raquel · Premium
+// pages/contacto.jsx — monky's · Premium
 import Head from 'next/head'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
@@ -7,7 +7,7 @@ export default function ContactoPage() {
   return (
     <>
       <Head>
-        <title>Contacto | Sweet Raquel</title>
+        <title>Contacto | monky&apos;s</title>
         <meta name="description" content="Contáctanos por WhatsApp, redes sociales o visita nuestra tienda en Huancayo." />
       </Head>
 
@@ -21,7 +21,7 @@ export default function ContactoPage() {
         <div className="grid-3-sep" style={{marginBottom:'40px'}}>
           {[
             { icon:'◉', label:'WhatsApp', detail:'+51 999 999 999', href:`https://wa.me/${WPP_NUMBER}` },
-            { icon:'◈', label:'Instagram', detail:'@sweetraquel', href:'https://instagram.com/sweetraquel' },
+            { icon:'◈', label:'Instagram', detail:'@monkysstore', href:'https://instagram.com/monkysstore' },
             { icon:'◎', label:'Tienda', detail:'Huancayo, Junín', href:'#' },
           ].map(c => (
             <a key={c.label} href={c.href} target="_blank" rel="noopener noreferrer"
@@ -36,7 +36,7 @@ export default function ContactoPage() {
           ))}
         </div>
 
-        <a href={`https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent('Hola Sweet Raquel 👋 Tengo una consulta')}`}
+        <a href={`https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent("Hola monky's 👋 Tengo una consulta")}`}
           target="_blank" rel="noopener noreferrer"
           className="btn-primary"
           style={{textDecoration:'none',display:'inline-block',padding:'14px 40px',letterSpacing:'2px'}}

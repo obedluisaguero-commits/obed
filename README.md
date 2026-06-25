@@ -1,4 +1,4 @@
-# Sweet Raquel — Documentación técnica
+# monky's — Documentación técnica
 
 Tienda online de moda familiar conectada a Google Sheets. Next.js + Tailwind + Vercel.
 
@@ -60,7 +60,7 @@ Hoja `Productos`, una fila por producto/variante:
 | `Stock` | número entero | unidades disponibles | `12` |
 | `Talla` | texto | S/M/L o numérica | `M` |
 | `Color` | texto | color principal | `Rosa` |
-| `Marca` | texto | marca o "Sweet Raquel" | `Sweet Raquel` |
+| `Marca` | texto | marca o "monky's" | `monky's` |
 | `Imagen1` | URL | imagen principal | `https://drive.google.com/...` |
 | `Imagen2` | URL/vacío | imagen secundaria | |
 | `Imagen3` | URL/vacío | imagen terciaria | |
@@ -154,6 +154,6 @@ O conectar el repositorio de GitHub directamente desde el dashboard de Vercel. A
 ## 6. Próximos pasos sugeridos
 - Reemplazar el número de WhatsApp placeholder (`51999999999`) en todos los archivos por el número real.
 - Subir imágenes reales a Cloudinary o Google Drive y actualizar las columnas `Imagen1/2/3`.
-- Configurar dominio propio (`sweetraquel.pe`) en Vercel y actualizar `SEO.canonical` / `BASE_URL`.
+- Configurar dominio propio (`monkysstore.pe`) en Vercel y actualizar `SEO.canonical` / `BASE_URL`.
 - Conectar Google Analytics 4 + Meta Pixel para medir conversión desde WhatsApp.
 - Considerar autenticación simple en el Sheet (protección de pestaña) para evitar ediciones accidentales del administrador.

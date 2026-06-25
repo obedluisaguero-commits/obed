@@ -1,6 +1,6 @@
 /**
- * Code.gs — Google Apps Script para Sweet Raquel
- * Se vincula a la hoja de cálculo "Sweet Raquel - Inventario"
+ * Code.gs — Google Apps Script para monky's
+ * Se vincula a la hoja de cálculo "monky's - Inventario"
  *
  * Funciones:
  * 1. Validación automática de datos al editar (precios, stock, estado)
@@ -11,7 +11,7 @@
 
 const SHEET_NAME = 'Productos'
 const STOCK_MINIMO = 5
-const EMAIL_ALERTAS = 'admin@sweetraquel.pe' // cambiar por el correo real
+const EMAIL_ALERTAS = 'admin@monkysstore.pe' // cambiar por el correo real
 const COLUMNS = {
   ID: 1, CATEGORIA: 2, SUBCATEGORIA: 3, CODIGO: 4, NOMBRE: 5, DESCRIPCION: 6,
   PRECIO: 7, PRECIO_OFERTA: 8, STOCK: 9, TALLA: 10, COLOR: 11, MARCA: 12,
@@ -184,7 +184,7 @@ function doGet(e) {
  */
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('Sweet Raquel')
+    .createMenu("monky's")
     .addItem('Validar todos los productos', 'validarTodaLaHoja')
     .addItem('Actualizar productos nuevos', 'actualizarProductosNuevosDiario')
     .addItem('Revisar stock bajo (todos)', 'revisarStockBajoCompleto')
@@ -198,7 +198,7 @@ function validarTodaLaHoja() {
     validarFila(sheet, row)
     actualizarEstadoAutomatico(sheet, row)
   }
-  SpreadsheetApp.getActive().toast('Validación completa', 'Sweet Raquel', 4)
+  SpreadsheetApp.getActive().toast('Validación completa', "monky's", 4)
 }
 
 function revisarStockBajoCompleto() {
