@@ -177,7 +177,7 @@ input:focus-visible {
   .navbar { padding: 0 20px; }
   .nav-links,
   .nav-search-desktop,
-  .nav-wpp-desktop { display: none; }
+  .nav-wpp-desktop { display: none !important; }
   .nav-toggle { display: inline-flex; align-items: center; }
   .nav-mobile.open { display: block; }
 }
