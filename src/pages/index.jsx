@@ -18,7 +18,7 @@ const CATEGORIES = [
   { num:'01', label:'Mujer',    sub:'Vestidos · Blusas · Lencería · Conjuntos', href:'/mujer',   accent:'var(--emerald)' },
   { num:'02', label:'Hombre',   sub:'Casacas · Polos · Pantalones · Táctica',   href:'/hombre',  accent:'var(--navy)' },
   { num:'03', label:'Niños',    sub:'Vestidos · Conjuntos · Ropa casual',        href:'/ninos',   accent:'var(--dark)' },
-  { num:'04', label:'Otros',    sub:'Accesorios · Belleza · Y más',              href:'/otros',   accent:'var(--gold)' },
+  { num:'04', label:'Otros',    sub:'Hogar · Accesorios · Novedades',            href:'/otros',   accent:'var(--gold)' },
 ]
 
 function normalizarTexto(texto = '') {
