@@ -11,6 +11,7 @@ const CATEGORY_META = {
   mujer:  { label:'Mujer',  subcats:['Vestidos','Lenceria','Ropa de dormir','Blusas','Conjuntos'], accent:'var(--emerald)' },
   hombre: { label:'Hombre', subcats:['Casacas','Polos','Pantalones','Ropa tactica'],               accent:'var(--navy)' },
   ninos:  { label:'Niños',  subcats:['Vestidos','Conjuntos','Ropa casual'],                        accent:'var(--dark)' },
+  otros:  { label:'Otros',  subcats:[],                                                            accent:'var(--gold)' },
 }
 
 function normalizar(t=''){return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
@@ -171,7 +172,7 @@ export default function CategoryPage({ categoria, products }) {
 }
 
 export async function getStaticPaths() {
-  return { paths:[{params:{categoria:'mujer'}},{params:{categoria:'hombre'}},{params:{categoria:'ninos'}}], fallback:false }
+  return { paths:[{params:{categoria:'mujer'}},{params:{categoria:'hombre'}},{params:{categoria:'ninos'}},{params:{categoria:'otros'}}], fallback:false }
 }
 
 export async function getStaticProps({ params }) {

@@ -4,7 +4,7 @@ import { fetchProducts } from '../lib/sheets'
 const BASE_URL = 'https://monkysstore.pe'
 
 function generateSiteMap(products) {
-  const staticPages = ['', '/mujer', '/hombre', '/ninos', '/ofertas', '/contacto']
+  const staticPages = ['', '/mujer', '/hombre', '/ninos', '/otros', '/ofertas', '/contacto']
   const staticXml = staticPages
     .map(
       (path) => `

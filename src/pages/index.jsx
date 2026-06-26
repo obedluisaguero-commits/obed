@@ -18,6 +18,7 @@ const CATEGORIES = [
   { num:'01', label:'Mujer',    sub:'Vestidos · Blusas · Lencería · Conjuntos', href:'/mujer',   accent:'var(--emerald)' },
   { num:'02', label:'Hombre',   sub:'Casacas · Polos · Pantalones · Táctica',   href:'/hombre',  accent:'var(--navy)' },
   { num:'03', label:'Niños',    sub:'Vestidos · Conjuntos · Ropa casual',        href:'/ninos',   accent:'var(--dark)' },
+  { num:'04', label:'Otros',    sub:'Accesorios · Belleza · Y más',              href:'/otros',   accent:'var(--gold)' },
 ]
 
 function normalizarTexto(texto = '') {
@@ -120,7 +121,7 @@ export default function Home({ featuredProducts = [] }) {
     ? featuredProducts
     : featuredProducts.filter(p => normalizarTexto(p.Categoria) === normalizarTexto(filter))
 
-  const FILTERS = [['todos','Todos'],['mujer','Mujer'],['hombre','Hombre'],['ninos','Niños']]
+  const FILTERS = [['todos','Todos'],['mujer','Mujer'],['hombre','Hombre'],['ninos','Niños'],['otros','Otros']]
 
   return (
     <>
@@ -213,11 +214,11 @@ export default function Home({ featuredProducts = [] }) {
             </Link>
           ))}
           {/* Bloque Ofertas */}
-          <Link href="/ofertas" style={{textDecoration:'none',background:'var(--black)',padding:'36px 28px',cursor:'pointer',position:'relative',gridColumn:'span 3',display:'block',transition:'background .15s'}}
+          <Link href="/ofertas" className="cats-ofertas" style={{textDecoration:'none',background:'var(--black)',padding:'36px 28px',cursor:'pointer',position:'relative',display:'block',transition:'background .15s'}}
             onMouseEnter={e=>e.currentTarget.style.background='#1a1a1a'}
             onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
           >
-            <p style={{fontSize:'11px',color:'rgba(255,255,255,.3)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>04</p>
+            <p style={{fontSize:'11px',color:'rgba(255,255,255,.3)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>05</p>
             <div style={{width:'32px',height:'2px',background:'var(--emerald-mist)',marginBottom:'14px'}} />
             <p style={{fontSize:'24px',fontWeight:700,color:'#fff',letterSpacing:'-1px',marginBottom:'4px'}}>Ofertas especiales</p>
             <p style={{fontSize:'12px',color:'rgba(255,255,255,.4)'}}>Descuentos hasta 50% · Liquidación · Promos del día</p>

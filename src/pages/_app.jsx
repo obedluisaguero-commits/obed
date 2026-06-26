@@ -6,7 +6,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
-const NAV_LINKS = [['/', 'Inicio'],['/mujer','Mujer'],['/hombre','Hombre'],['/ninos','Niños'],['/ofertas','Ofertas'],['/contacto','Contacto']]
+const NAV_LINKS = [['/', 'Inicio'],['/mujer','Mujer'],['/hombre','Hombre'],['/ninos','Niños'],['/otros','Otros'],['/ofertas','Ofertas'],['/contacto','Contacto']]
 
 function Topbar() {
   return (
@@ -119,7 +119,7 @@ function Navbar() {
 
 function Footer() {
   const cols = [
-    { title: 'Colecciones', links: [['Mujer','/mujer'],['Hombre','/hombre'],['Niños','/ninos'],['Ropa de dormir','/mujer'],['Ofertas','/ofertas']] },
+    { title: 'Colecciones', links: [['Mujer','/mujer'],['Hombre','/hombre'],['Niños','/ninos'],['Otros','/otros'],['Ofertas','/ofertas']] },
     { title: 'Información', links: [['Guía de tallas','#'],['Política de cambios','#'],['Preguntas frecuentes','#'],['Sobre nosotros','#']] },
     { title: 'Contacto', links: [['WhatsApp','#'],['Instagram','#'],['Facebook','#'],['Huancayo, Perú','#']] },
   ]
