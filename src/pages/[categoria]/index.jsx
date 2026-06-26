@@ -23,6 +23,16 @@ export default function CategoryPage({ categoria, products }) {
 
   const sizes = useMemo(() => [...new Set(products.map(p => p.Talla).filter(Boolean))], [products])
 
+  // Subcategorías dinámicas: las curadas de CATEGORY_META + cualquier
+  // subcategoría nueva que venga de los productos de la hoja, así aparecen
+  // como pestañas sin tener que tocar el código.
+  const subcats = useMemo(() => {
+    const curated = meta?.subcats || []
+    const enData = [...new Set(products.map(p => p.Subcategoria).filter(Boolean))]
+    const extras = enData.filter(s => !curated.some(c => normalizar(c) === normalizar(s)))
+    return [...curated, ...extras]
+  }, [meta, products])
+
   const filtered = useMemo(() => {
     let list = [...products]
     if (activeSub  !== 'todas') list = list.filter(p => normalizar(p.Subcategoria) === normalizar(activeSub))
@@ -64,7 +74,7 @@ export default function CategoryPage({ categoria, products }) {
           <div style={{marginBottom:'28px'}}>
             <p style={{fontSize:'10px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)',marginBottom:'12px'}}>Subcategoría</p>
             <div style={{display:'flex',flexDirection:'column',gap:'2px'}}>
-              {['todas',...meta.subcats].map(s => (
+              {['todas',...subcats].map(s => (
                 <button key={s} onClick={()=>setActiveSub(s)} style={{
                   textAlign:'left', padding:'8px 10px', fontSize:'12px', cursor:'pointer', border:'none',
                   background: activeSub===s ? 'var(--surface)' : 'transparent',
