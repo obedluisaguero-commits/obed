@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import Image from 'next/image'
+import { CartProvider, useCart, buildWhatsappOrder } from '../lib/cart'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
 const NAV_LINKS = [['/', 'Inicio'],['/mujer','Mujer'],['/hombre','Hombre'],['/ninos','Niños'],['/otros','Otros'],['/ofertas','Ofertas'],['/contacto','Contacto']]
@@ -71,6 +72,9 @@ function Navbar() {
           WhatsApp
         </a>
 
+        {/* Carrito (siempre visible) */}
+        <CartButton />
+
         {/* Botón hamburguesa (solo móvil) */}
         <button
           type="button"
@@ -114,6 +118,95 @@ function Navbar() {
         </a>
       </div>
     </nav>
+  )
+}
+
+function CartButton() {
+  const { count, hydrated, setOpen } = useCart()
+  return (
+    <button type="button" onClick={() => setOpen(true)} aria-label="Ver carrito"
+      style={{position:'relative',background:'none',border:'none',cursor:'pointer',padding:'6px',display:'inline-flex',alignItems:'center',color:'var(--anthracite)'}}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+      {hydrated && count > 0 && (
+        <span style={{position:'absolute',top:'-2px',right:'-2px',background:'var(--gold)',color:'#fff',fontSize:'10px',fontWeight:700,minWidth:'17px',height:'17px',borderRadius:'9px',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px',lineHeight:1}}>
+          {count}
+        </span>
+      )}
+    </button>
+  )
+}
+
+function CartDrawer() {
+  const { items, count, total, removeItem, updateQty, clear, open, setOpen } = useCart()
+  const wppHref = items.length
+    ? `https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent(buildWhatsappOrder(items, total))}`
+    : '#'
+
+  return (
+    <>
+      <div onClick={() => setOpen(false)} aria-hidden="true"
+        style={{position:'fixed',inset:0,background:'rgba(0,0,0,.4)',opacity:open?1:0,visibility:open?'visible':'hidden',transition:'opacity .2s',zIndex:100}}
+      />
+      <aside aria-label="Carrito de compras"
+        style={{position:'fixed',top:0,right:0,height:'100%',width:'min(380px,90vw)',background:'#fff',boxShadow:'-8px 0 24px rgba(0,0,0,.12)',transform:open?'translateX(0)':'translateX(100%)',transition:'transform .25s ease',zIndex:101,display:'flex',flexDirection:'column'}}
+      >
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'18px 20px',borderBottom:'1px solid var(--border)'}}>
+          <span style={{fontSize:'14px',fontWeight:700,letterSpacing:'.5px',textTransform:'uppercase',color:'var(--black)'}}>
+            Tu pedido {count > 0 && <span style={{color:'var(--mid)'}}>({count})</span>}
+          </span>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar carrito"
+            style={{background:'none',border:'none',cursor:'pointer',fontSize:'20px',color:'var(--mid)',lineHeight:1}}>✕</button>
+        </div>
+
+        <div style={{flex:1,overflowY:'auto',padding:'8px 0'}}>
+          {items.length === 0 ? (
+            <div style={{textAlign:'center',padding:'60px 24px',color:'var(--light)'}}>
+              <p style={{fontSize:'32px',marginBottom:'12px'}}>🛍️</p>
+              <p style={{fontSize:'13px'}}>Tu carrito está vacío.</p>
+              <p style={{fontSize:'12px',marginTop:'4px'}}>Agrega productos y arma tu pedido.</p>
+            </div>
+          ) : items.map((i) => (
+            <div key={i.id} style={{display:'flex',gap:'12px',padding:'12px 20px',borderBottom:'1px solid var(--border)'}}>
+              <div style={{width:'56px',height:'56px',flexShrink:0,background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px',overflow:'hidden',position:'relative'}}>
+                {i.imagen ? <Image src={i.imagen} alt={i.nombre} fill style={{objectFit:'cover'}} sizes="56px" /> : <span>👗</span>}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <p style={{fontSize:'12px',fontWeight:600,color:'var(--black)',lineHeight:1.3,marginBottom:'2px'}} className="line-clamp-2">{i.nombre}</p>
+                <p style={{fontSize:'11px',color:'var(--mid)',marginBottom:'6px'}}>S/ {i.precio}{i.talla ? ` · T: ${i.talla}` : ''}</p>
+                <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                  <div style={{display:'flex',alignItems:'center',border:'1px solid var(--border)'}}>
+                    <button type="button" onClick={() => updateQty(i.id, i.qty - 1)} aria-label="Quitar uno" style={{width:'26px',height:'26px',border:'none',background:'#fff',cursor:'pointer',color:'var(--mid)',fontSize:'14px'}}>−</button>
+                    <span style={{minWidth:'26px',textAlign:'center',fontSize:'12px',fontWeight:600}}>{i.qty}</span>
+                    <button type="button" onClick={() => updateQty(i.id, i.qty + 1)} aria-label="Agregar uno" style={{width:'26px',height:'26px',border:'none',background:'#fff',cursor:'pointer',color:'var(--mid)',fontSize:'14px'}}>+</button>
+                  </div>
+                  <button type="button" onClick={() => removeItem(i.id)} style={{background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:'var(--light)',textDecoration:'underline'}}>Quitar</button>
+                </div>
+              </div>
+              <span style={{fontSize:'13px',fontWeight:700,color:'var(--black)',whiteSpace:'nowrap'}}>S/ {i.precio * i.qty}</span>
+            </div>
+          ))}
+        </div>
+
+        {items.length > 0 && (
+          <div style={{borderTop:'1px solid var(--border)',padding:'16px 20px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:'12px'}}>
+              <span style={{fontSize:'12px',textTransform:'uppercase',letterSpacing:'1px',color:'var(--mid)'}}>Total</span>
+              <span style={{fontSize:'20px',fontWeight:700,color:'var(--black)'}}>S/ {total}</span>
+            </div>
+            <a href={wppHref} target="_blank" rel="noopener noreferrer" className="btn-primary"
+              style={{textDecoration:'none',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',padding:'13px',marginBottom:'8px'}}>
+              Enviar pedido por WhatsApp
+            </a>
+            <button type="button" onClick={clear} style={{width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:'var(--light)',padding:'4px'}}>Vaciar carrito</button>
+          </div>
+        )}
+      </aside>
+    </>
   )
 }
 
@@ -186,7 +279,7 @@ function WhatsAppFloat() {
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <CartProvider>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="utf-8" />
@@ -199,6 +292,7 @@ export default function App({ Component, pageProps }) {
       </main>
       <Footer />
       <WhatsAppFloat />
-    </>
+      <CartDrawer />
+    </CartProvider>
   )
 }

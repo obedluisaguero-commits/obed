@@ -4,9 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts } from '../lib/sheets'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
-const WPP_BASE = `https://wa.me/${WPP_NUMBER}?text=`
+import { useCart } from '../lib/cart'
 
 const SEO = {
   title: "monky's | Moda para toda la familia – Huancayo, Perú",
@@ -26,14 +24,10 @@ function normalizarTexto(texto = '') {
 }
 
 function ProductCard({ product }) {
+  const { addItem } = useCart()
   const hasDiscount = product.PrecioOferta && product.PrecioOferta < product.Precio
   const price = hasDiscount ? product.PrecioOferta : product.Precio
   const discount = hasDiscount ? Math.round(((product.Precio - product.PrecioOferta) / product.Precio) * 100) : 0
-  const stockLow = product.Stock > 0 && product.Stock <= 5
-
-  const wppMsg = encodeURIComponent(
-    `Hola monky's 👋 Me interesa:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nPrecio: S/ ${price}\nTalla: ${product.Talla}\n\n¿Está disponible?`
-  )
 
   return (
     <div style={{background:'#fff',border:'1px solid var(--border)',cursor:'pointer',transition:'background .15s'}}
@@ -89,22 +83,23 @@ function ProductCard({ product }) {
 
         {/* Botón */}
         <div style={{display:'flex',gap:'6px'}}>
-          <a
-            href={product.Stock > 0 ? `${WPP_BASE}${wppMsg}` : undefined}
-            target="_blank" rel="noopener noreferrer"
+          <button
+            type="button"
+            disabled={product.Stock <= 0}
+            onClick={() => addItem(product)}
             style={{
-              flex:1, textAlign:'center', textDecoration:'none', padding:'10px',
+              flex:1, textAlign:'center', padding:'10px',
               fontSize:'10px', fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase',
               background: product.Stock > 0 ? 'var(--black)' : 'var(--surface)',
               color: product.Stock > 0 ? '#fff' : 'var(--light)',
               border:'none', cursor: product.Stock > 0 ? 'pointer' : 'default',
-              pointerEvents: product.Stock > 0 ? 'auto' : 'none', transition:'background .15s',
+              transition:'background .15s',
             }}
             onMouseEnter={e=>{ if(product.Stock > 0) e.currentTarget.style.background='var(--emerald)' }}
             onMouseLeave={e=>{ if(product.Stock > 0) e.currentTarget.style.background='var(--black)' }}
           >
-            {product.Stock > 0 ? 'Pedir por WhatsApp' : 'Sin stock'}
-          </a>
+            {product.Stock > 0 ? 'Agregar' : 'Sin stock'}
+          </button>
           <Link href={`/producto/${product.ID}`}
             style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'10px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
           >→</Link>

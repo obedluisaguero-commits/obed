@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts, fetchProductById, fetchRelatedProducts } from '../../lib/sheets'
+import { useCart } from '../../lib/cart'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
 
@@ -14,6 +15,7 @@ function slugCategoria(t = '') {
 }
 
 export default function ProductPage({ product, related }) {
+  const { addItem } = useCart()
   const [activeImg, setActiveImg] = useState(0)
   const [liveStock, setLiveStock] = useState(product.Stock)
 
@@ -159,16 +161,29 @@ export default function ProductPage({ product, related }) {
               </div>
             </div>
 
-            <a
-              href={liveStock > 0 ? `https://wa.me/${WPP_NUMBER}?text=${wppMsg}` : undefined}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`block text-center font-poppins font-semibold py-3.5 rounded-full transition-colors ${
-                liveStock > 0 ? 'bg-[#173A32] text-white hover:bg-[#0F2A24]' : 'bg-gray-100 text-gray-400 pointer-events-none'
-              }`}
-            >
-              {liveStock > 0 ? '💬 Comprar por WhatsApp' : 'Sin stock disponible'}
-            </a>
+            {liveStock > 0 ? (
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => addItem({ ...product, Stock: liveStock })}
+                  className="block w-full text-center font-poppins font-semibold py-3.5 rounded-full transition-colors bg-[#173A32] text-white hover:bg-[#0F2A24]"
+                >
+                  🛒 Agregar al carrito
+                </button>
+                <a
+                  href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center font-poppins font-semibold py-3 rounded-full transition-colors border border-[#173A32] text-[#173A32] hover:bg-[#E9F0EC]"
+                >
+                  💬 Comprar ahora por WhatsApp
+                </a>
+              </div>
+            ) : (
+              <div className="block text-center font-poppins font-semibold py-3.5 rounded-full bg-gray-100 text-gray-400">
+                Sin stock disponible
+              </div>
+            )}
 
             <div className="flex gap-4 mt-5 text-xs text-gray-400 font-poppins">
               <span>🚚 Envíos a todo Perú</span>

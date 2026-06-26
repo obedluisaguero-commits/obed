@@ -4,8 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProductsByCategory } from '../../lib/sheets'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { useCart } from '../../lib/cart'
 
 const CATEGORY_META = {
   mujer:  { label:'Mujer',  subcats:['Vestidos','Lenceria','Ropa de dormir','Blusas','Conjuntos'], accent:'var(--emerald)' },
@@ -17,6 +16,7 @@ const CATEGORY_META = {
 function normalizar(t=''){return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 
 export default function CategoryPage({ categoria, products }) {
+  const { addItem } = useCart()
   const meta = CATEGORY_META[categoria]
   const [activeSub, setActiveSub]   = useState('todas')
   const [activeSize, setActiveSize] = useState('todas')
@@ -121,7 +121,6 @@ export default function CategoryPage({ categoria, products }) {
                 const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
                 const price = hasDiscount ? p.PrecioOferta : p.Precio
                 const discount = hasDiscount ? Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100) : 0
-                const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
                 return (
                   <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
                     onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
@@ -144,11 +143,11 @@ export default function CategoryPage({ categoria, products }) {
                         {hasDiscount && <span style={{fontSize:'11px',color:'var(--light)',textDecoration:'line-through'}}>S/ {p.Precio}</span>}
                       </div>
                       <div style={{display:'flex',gap:'6px'}}>
-                        <a href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`} target="_blank" rel="noopener noreferrer"
-                          style={{flex:1,textAlign:'center',textDecoration:'none',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',transition:'background .15s'}}
+                        <button type="button" onClick={() => addItem(p)}
+                          style={{flex:1,textAlign:'center',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',border:'none',cursor:'pointer',transition:'background .15s'}}
                           onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
                           onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-                        >Pedir por WhatsApp</a>
+                        >Agregar</button>
                         <Link href={`/producto/${p.ID}`}
                           style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'9px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
                           aria-label={`Ver detalle de ${p.Nombre}`}

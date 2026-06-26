@@ -4,10 +4,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchOffers } from '../lib/sheets'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { useCart } from '../lib/cart'
 
 export default function OfertasPage({ offers }) {
+  const { addItem } = useCart()
   const [cat, setCat] = useState('todas')
   const categories = useMemo(() => [...new Set(offers.map(p => p.Categoria))], [offers])
   const filtered = cat === 'todas' ? offers : offers.filter(p => p.Categoria === cat)
@@ -43,7 +43,6 @@ export default function OfertasPage({ offers }) {
           <div className="product-grid">
             {filtered.map(p => {
               const discount = Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100)
-              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa esta oferta:\n\n*${p.Nombre}*\nPrecio oferta: S/ ${p.PrecioOferta}`)
               return (
                 <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
                   onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
@@ -65,11 +64,11 @@ export default function OfertasPage({ offers }) {
                       <span style={{fontSize:'11px',color:'var(--light)',textDecoration:'line-through'}}>S/ {p.Precio}</span>
                     </div>
                     <div style={{display:'flex',gap:'6px'}}>
-                      <a href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`} target="_blank" rel="noopener noreferrer"
-                        style={{flex:1,textAlign:'center',textDecoration:'none',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',transition:'background .15s'}}
+                      <button type="button" onClick={() => addItem(p)}
+                        style={{flex:1,textAlign:'center',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',border:'none',cursor:'pointer',transition:'background .15s'}}
                         onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
                         onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-                      >Aprovechar oferta</a>
+                      >Agregar</button>
                       <Link href={`/producto/${p.ID}`}
                         style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'9px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
                         aria-label={`Ver detalle de ${p.Nombre}`}

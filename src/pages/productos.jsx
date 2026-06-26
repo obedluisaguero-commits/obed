@@ -6,14 +6,14 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts } from '../lib/sheets'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { useCart } from '../lib/cart'
 
 function normalizar(t = '') {
   return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 export default function ProductosPage({ products }) {
+  const { addItem } = useCart()
   const [cat, setCat] = useState('todas')
   const categories = useMemo(() => [...new Set(products.map((p) => p.Categoria).filter(Boolean))], [products])
   const filtered = cat === 'todas' ? products : products.filter((p) => normalizar(p.Categoria) === normalizar(cat))
@@ -57,7 +57,6 @@ export default function ProductosPage({ products }) {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio
               const discount = hasDiscount ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0
-              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
               return (
                 <div key={p.ID} style={{ background: '#fff', transition: 'background .15s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface)')}
@@ -84,18 +83,17 @@ export default function ProductosPage({ products }) {
                       <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--black)' }}>S/ {price}</span>
                       {hasDiscount && <span style={{ fontSize: '11px', color: 'var(--light)', textDecoration: 'line-through' }}>S/ {p.Precio}</span>}
                     </div>
-                    <a href={p.Stock > 0 ? `https://wa.me/${WPP_NUMBER}?text=${wppMsg}` : undefined}
-                      target="_blank" rel="noopener noreferrer"
+                    <button type="button" disabled={p.Stock <= 0} onClick={() => addItem(p)}
                       style={{
-                        display: 'block', textAlign: 'center', textDecoration: 'none', padding: '9px',
+                        display: 'block', width: '100%', textAlign: 'center', padding: '9px',
                         fontSize: '10px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase',
                         background: p.Stock > 0 ? 'var(--black)' : 'var(--surface)',
                         color: p.Stock > 0 ? '#fff' : 'var(--light)',
-                        pointerEvents: p.Stock > 0 ? 'auto' : 'none', transition: 'background .15s',
+                        border: 'none', cursor: p.Stock > 0 ? 'pointer' : 'default', transition: 'background .15s',
                       }}
                       onMouseEnter={(e) => { if (p.Stock > 0) e.currentTarget.style.background = 'var(--emerald)' }}
                       onMouseLeave={(e) => { if (p.Stock > 0) e.currentTarget.style.background = 'var(--black)' }}
-                    >{p.Stock > 0 ? 'Pedir por WhatsApp' : 'Sin stock'}</a>
+                    >{p.Stock > 0 ? 'Agregar' : 'Sin stock'}</button>
                   </div>
                 </div>
               )

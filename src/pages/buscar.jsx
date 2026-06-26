@@ -5,10 +5,10 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { useCart } from '../lib/cart'
 
 export default function BuscarPage() {
+  const { addItem } = useCart()
   const router = useRouter()
   const q = typeof router.query.q === 'string' ? router.query.q : ''
 
@@ -106,7 +106,6 @@ export default function BuscarPage() {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio
               const discount = hasDiscount ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0
-              const wppMsg = encodeURIComponent(`Hola monky's 👋 Me interesa:\n\n*${p.Nombre}*\nCódigo: ${p.Codigo}\nPrecio: S/ ${price}`)
               return (
                 <div key={p.ID} style={{ background: '#fff', transition: 'background .15s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface)')}
@@ -127,11 +126,11 @@ export default function BuscarPage() {
                       <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--black)' }}>S/ {price}</span>
                       {hasDiscount && <span style={{ fontSize: '11px', color: 'var(--light)', textDecoration: 'line-through' }}>S/ {p.Precio}</span>}
                     </div>
-                    <a href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`} target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'block', textAlign: 'center', textDecoration: 'none', padding: '9px', fontSize: '10px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', background: 'var(--black)', color: '#fff', transition: 'background .15s' }}
+                    <button type="button" onClick={() => addItem(p)}
+                      style={{ display: 'block', width: '100%', textAlign: 'center', padding: '9px', fontSize: '10px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', background: 'var(--black)', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background .15s' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--emerald)')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--black)')}
-                    >Pedir por WhatsApp</a>
+                    >Agregar</button>
                   </div>
                 </div>
               )
