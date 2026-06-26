@@ -32,6 +32,46 @@ function onEditTrigger(e) {
   validarFila(sheet, row)
   actualizarEstadoAutomatico(sheet, row)
   verificarStockBajo(sheet, row)
+  revalidarTienda(false) // actualiza la web al instante (con throttle)
+}
+
+/**
+ * Revalidación bajo demanda: avisa a la tienda (Next.js en Vercel) para que
+ * relea la hoja de inmediato, sin esperar la regeneración automática.
+ *
+ * Configura estas propiedades en Apps Script:
+ *   Configuración del proyecto > Propiedades del script:
+ *     SITE_URL           = https://monkysstore.pe
+ *     REVALIDATE_SECRET  = (el mismo valor que pusiste en Vercel)
+ *
+ * @param {boolean} force  si es true, ignora el throttle (para el botón manual).
+ */
+function revalidarTienda(force) {
+  const props = PropertiesService.getScriptProperties()
+  const siteUrl = props.getProperty('SITE_URL')
+  const secret = props.getProperty('REVALIDATE_SECRET')
+  if (!siteUrl || !secret) return // aún no configurado
+
+  // Throttle: máximo una llamada cada 10s (evita saturar al editar en lote).
+  if (!force) {
+    const last = Number(props.getProperty('lastReval') || 0)
+    if (Date.now() - last < 10000) return
+  }
+  props.setProperty('lastReval', String(Date.now()))
+
+  try {
+    UrlFetchApp.fetch(
+      siteUrl.replace(/\/$/, '') + '/api/revalidate?secret=' + encodeURIComponent(secret),
+      { muteHttpExceptions: true }
+    )
+  } catch (e) {
+    // silencioso: si la web no responde, la tienda igual se regenera sola cada 60s
+  }
+}
+
+function revalidarTiendaManual() {
+  revalidarTienda(true)
+  SpreadsheetApp.getActive().toast('Tienda actualizada', "monky's", 4)
 }
 
 /**
@@ -185,6 +225,7 @@ function doGet(e) {
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("monky's")
+    .addItem('Actualizar tienda ahora', 'revalidarTiendaManual')
     .addItem('Validar todos los productos', 'validarTodaLaHoja')
     .addItem('Actualizar productos nuevos', 'actualizarProductosNuevosDiario')
     .addItem('Revisar stock bajo (todos)', 'revisarStockBajoCompleto')
