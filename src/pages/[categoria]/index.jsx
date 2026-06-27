@@ -16,7 +16,7 @@ const CATEGORY_META = {
   otros:  { label: 'Otros',  accent: 'var(--gold)' },
 }
 
-function normalizar(t=''){return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function normalizar(t=''){return t.toString().replace(/\s+/g,' ').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 
 export default function CategoryPage({ categoria, products }) {
   const { addItem } = useCart()

@@ -33,8 +33,10 @@ function rowToProduct(row) {
   obj.Precio = parseFloat(obj.Precio) || 0
   obj.PrecioOferta = obj.PrecioOferta ? parseFloat(obj.PrecioOferta) : null
   obj.Stock = parseInt(obj.Stock, 10) || 0
-  obj.Categoria = (obj.Categoria || '').trim()
-  obj.Subcategoria = (obj.Subcategoria || '').trim()
+  // Colapsa espacios múltiples e internos para evitar duplicados/desorden
+  // por inconsistencias al escribir en la hoja (ej. "Vestido  Niña").
+  obj.Categoria = (obj.Categoria || '').replace(/\s+/g, ' ').trim()
+  obj.Subcategoria = (obj.Subcategoria || '').replace(/\s+/g, ' ').trim()
   obj.Estado = (obj.Estado || 'activo').toLowerCase().trim()
   return obj
 }
@@ -72,6 +74,7 @@ export async function fetchProductById(id) {
 function normalizar(texto = '') {
   return texto
     .toString()
+    .replace(/\s+/g, ' ') // colapsa espacios múltiples/internos
     .trim()
     .toLowerCase()
     .normalize('NFD')
