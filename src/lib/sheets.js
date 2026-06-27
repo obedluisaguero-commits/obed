@@ -25,6 +25,17 @@ const COLUMNS = [
   'Estado',
 ]
 
+// Quita caracteres invisibles (espacios de ancho cero, BOM, soft hyphen,
+// nbsp, etc.) y colapsa espacios. Estos se cuelan al copiar/pegar texto en la
+// hoja y, aunque se ven idénticos, rompen el agrupado de subcategorías.
+function limpiarTexto(v) {
+  return (v || '')
+    .toString()
+    .replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '') // invisibles de ancho cero
+    .replace(/\s+/g, ' ') // colapsa espacios (incluye nbsp)
+    .trim()
+}
+
 function rowToProduct(row) {
   const obj = {}
   COLUMNS.forEach((col, i) => {
@@ -33,11 +44,10 @@ function rowToProduct(row) {
   obj.Precio = parseFloat(obj.Precio) || 0
   obj.PrecioOferta = obj.PrecioOferta ? parseFloat(obj.PrecioOferta) : null
   obj.Stock = parseInt(obj.Stock, 10) || 0
-  // Colapsa espacios múltiples e internos para evitar duplicados/desorden
-  // por inconsistencias al escribir en la hoja (ej. "Vestido  Niña").
-  obj.Categoria = (obj.Categoria || '').replace(/\s+/g, ' ').trim()
-  obj.Subcategoria = (obj.Subcategoria || '').replace(/\s+/g, ' ').trim()
-  obj.Estado = (obj.Estado || 'activo').toLowerCase().trim()
+  obj.Categoria = limpiarTexto(obj.Categoria)
+  obj.Subcategoria = limpiarTexto(obj.Subcategoria)
+  obj.Talla = limpiarTexto(obj.Talla)
+  obj.Estado = limpiarTexto(obj.Estado).toLowerCase()
   return obj
 }
 
@@ -74,6 +84,7 @@ export async function fetchProductById(id) {
 function normalizar(texto = '') {
   return texto
     .toString()
+    .replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '') // quita invisibles de ancho cero
     .replace(/\s+/g, ' ') // colapsa espacios múltiples/internos
     .trim()
     .toLowerCase()
