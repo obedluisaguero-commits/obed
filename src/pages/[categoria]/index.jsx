@@ -6,11 +6,14 @@ import Image from 'next/image'
 import { fetchProductsByCategory } from '../../lib/sheets'
 import { useCart } from '../../lib/cart'
 
+// Solo metadatos de presentación (nombre y color de acento). Las subcategorías
+// NO se definen aquí: se generan dinámicamente desde los productos reales de
+// cada categoría, para que el menú siempre coincida con la hoja.
 const CATEGORY_META = {
-  mujer:  { label:'Mujer',  subcats:['Vestidos','Lenceria','Ropa de dormir','Blusas','Conjuntos'], accent:'var(--emerald)' },
-  hombre: { label:'Hombre', subcats:['Casacas','Polos','Pantalones','Ropa tactica'],               accent:'var(--navy)' },
-  ninos:  { label:'Niños',  subcats:['Vestidos','Conjuntos','Ropa casual'],                        accent:'var(--dark)' },
-  otros:  { label:'Otros',  subcats:[],                                                            accent:'var(--gold)' },
+  mujer:  { label: 'Mujer',  accent: 'var(--emerald)' },
+  hombre: { label: 'Hombre', accent: 'var(--navy)' },
+  ninos:  { label: 'Niños',  accent: 'var(--dark)' },
+  otros:  { label: 'Otros',  accent: 'var(--gold)' },
 }
 
 function normalizar(t=''){return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
@@ -24,15 +27,20 @@ export default function CategoryPage({ categoria, products }) {
 
   const sizes = useMemo(() => [...new Set(products.map(p => p.Talla).filter(Boolean))], [products])
 
-  // Subcategorías dinámicas: las curadas de CATEGORY_META + cualquier
-  // subcategoría nueva que venga de los productos de la hoja, así aparecen
-  // como pestañas sin tener que tocar el código.
+  // Subcategorías 100% dinámicas: se toman de los productos reales de esta
+  // categoría, sin duplicados (ignorando mayúsculas/tildes) y ordenadas
+  // alfabéticamente. Así el menú siempre coincide con la hoja, sin pestañas
+  // "fantasma" que no tengan productos.
   const subcats = useMemo(() => {
-    const curated = meta?.subcats || []
-    const enData = [...new Set(products.map(p => p.Subcategoria).filter(Boolean))]
-    const extras = enData.filter(s => !curated.some(c => normalizar(c) === normalizar(s)))
-    return [...curated, ...extras]
-  }, [meta, products])
+    const vistos = new Map() // clave normalizada -> texto a mostrar
+    for (const p of products) {
+      const raw = (p.Subcategoria || '').trim()
+      if (!raw) continue
+      const key = normalizar(raw)
+      if (!vistos.has(key)) vistos.set(key, raw)
+    }
+    return [...vistos.values()].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
+  }, [products])
 
   const filtered = useMemo(() => {
     let list = [...products]
@@ -51,7 +59,7 @@ export default function CategoryPage({ categoria, products }) {
     <>
       <Head>
         <title>{`${meta.label} | monky's`}</title>
-        <meta name="description" content={`Ropa de ${meta.label.toLowerCase()} en monky's: ${meta.subcats.join(', ')}. Envíos a todo Perú.`} />
+        <meta name="description" content={`${meta.label} en monky's${subcats.length ? ': ' + subcats.slice(0, 8).join(', ') : ''}. Envíos a todo Perú.`} />
         <link rel="canonical" href={`https://monkysstore.pe/${categoria}`} />
       </Head>
 
