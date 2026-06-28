@@ -109,7 +109,7 @@ function ProductCard({ product }) {
   )
 }
 
-export default function Home({ featuredProducts = [] }) {
+export default function Home({ featuredProducts = [], offersCount = 0, maxDiscount = 0, offerCategories = [] }) {
   const [filter, setFilter] = useState('todos')
 
   const filtered = filter === 'todos'
@@ -212,17 +212,21 @@ export default function Home({ featuredProducts = [] }) {
               <span style={{position:'absolute',right:'24px',top:'50%',transform:'translateY(-50%)',color:'var(--light)',fontSize:'18px'}}>→</span>
             </Link>
           ))}
-          {/* Bloque Ofertas */}
-          <Link href="/ofertas" className="cats-ofertas" style={{textDecoration:'none',background:'var(--black)',padding:'36px 28px',cursor:'pointer',position:'relative',display:'block',transition:'background .15s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='#1a1a1a'}
-            onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-          >
-            <p style={{fontSize:'11px',color:'rgba(255,255,255,.3)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>05</p>
-            <div style={{width:'32px',height:'2px',background:'var(--emerald-mist)',marginBottom:'14px'}} />
-            <p style={{fontSize:'24px',fontWeight:700,color:'#fff',letterSpacing:'-1px',marginBottom:'4px'}}>Ofertas especiales</p>
-            <p style={{fontSize:'12px',color:'rgba(255,255,255,.4)'}}>Descuentos hasta 50% · Liquidación · Promos del día</p>
-            <span style={{position:'absolute',right:'32px',top:'50%',transform:'translateY(-50%)',color:'rgba(255,255,255,.3)',fontSize:'24px'}}>→</span>
-          </Link>
+          {/* Bloque Ofertas (solo si hay ofertas reales) */}
+          {offersCount > 0 && (
+            <Link href="/ofertas" className="cats-ofertas" style={{textDecoration:'none',background:'var(--black)',padding:'36px 28px',cursor:'pointer',position:'relative',display:'block',transition:'background .15s'}}
+              onMouseEnter={e=>e.currentTarget.style.background='#1a1a1a'}
+              onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
+            >
+              <p style={{fontSize:'11px',color:'rgba(255,255,255,.3)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>05</p>
+              <div style={{width:'32px',height:'2px',background:'var(--emerald-mist)',marginBottom:'14px'}} />
+              <p style={{fontSize:'24px',fontWeight:700,color:'#fff',letterSpacing:'-1px',marginBottom:'4px'}}>Ofertas especiales</p>
+              <p style={{fontSize:'12px',color:'rgba(255,255,255,.4)'}}>
+                {maxDiscount > 0 ? `Hasta ${maxDiscount}% de descuento · ` : ''}{offersCount} {offersCount === 1 ? 'producto en oferta' : 'productos en oferta'}
+              </p>
+              <span style={{position:'absolute',right:'32px',top:'50%',transform:'translateY(-50%)',color:'rgba(255,255,255,.3)',fontSize:'24px'}}>→</span>
+            </Link>
+          )}
         </div>
       </section>
 
@@ -267,24 +271,30 @@ export default function Home({ featuredProducts = [] }) {
         </div>
       </section>
 
-      {/* ── BANNER PROMO ─────────────────────────────────────────────────── */}
-      <section style={{background:'var(--black)',padding:'72px 32px',textAlign:'center'}}>
-        <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'16px'}}>Tiempo limitado</p>
-        <h2 style={{fontSize:'44px',fontWeight:700,color:'#fff',letterSpacing:'-1.5px',marginBottom:'8px'}}>
-          Esta semana hasta <em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>50% OFF</em>
-        </h2>
-        <p style={{fontSize:'13px',color:'rgba(255,255,255,.35)',marginBottom:'28px',fontWeight:300}}>
-          Nuevos lotes cada semana · Liquidación de temporada
-        </p>
-        <div style={{display:'flex',gap:'8px',justifyContent:'center',flexWrap:'wrap',marginBottom:'32px'}}>
-          {['Liquidación vestidos','Combo hombre 2×1','Sets niños −40%','Pijamas desde S/ 30'].map(t => (
-            <span key={t} style={{border:'1px solid rgba(255,255,255,.15)',color:'rgba(255,255,255,.6)',padding:'7px 18px',fontSize:'11px',letterSpacing:'.5px',textTransform:'uppercase'}}>{t}</span>
-          ))}
-        </div>
-        <Link href="/ofertas" className="btn-primary" style={{textDecoration:'none',display:'inline-block',padding:'14px 40px',letterSpacing:'2px'}}>
-          Ver todas las ofertas
-        </Link>
-      </section>
+      {/* ── BANNER PROMO (solo si hay ofertas reales) ────────────────────── */}
+      {offersCount > 0 && (
+        <section style={{background:'var(--black)',padding:'72px 32px',textAlign:'center'}}>
+          <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'16px'}}>Ofertas</p>
+          <h2 style={{fontSize:'44px',fontWeight:700,color:'#fff',letterSpacing:'-1.5px',marginBottom:'8px'}}>
+            {maxDiscount > 0
+              ? <>Hasta <em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>{maxDiscount}% OFF</em></>
+              : <>Ofertas <em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>especiales</em></>}
+          </h2>
+          <p style={{fontSize:'13px',color:'rgba(255,255,255,.35)',marginBottom:'28px',fontWeight:300}}>
+            {offersCount} {offersCount === 1 ? 'producto con descuento' : 'productos con descuento'}
+          </p>
+          {offerCategories.length > 0 && (
+            <div style={{display:'flex',gap:'8px',justifyContent:'center',flexWrap:'wrap',marginBottom:'32px'}}>
+              {offerCategories.map(c => (
+                <span key={c} style={{border:'1px solid rgba(255,255,255,.15)',color:'rgba(255,255,255,.6)',padding:'7px 18px',fontSize:'11px',letterSpacing:'.5px',textTransform:'uppercase'}}>Ofertas en {c}</span>
+              ))}
+            </div>
+          )}
+          <Link href="/ofertas" className="btn-primary" style={{textDecoration:'none',display:'inline-block',padding:'14px 40px',letterSpacing:'2px'}}>
+            Ver todas las ofertas
+          </Link>
+        </section>
+      )}
 
       {/* ── MÉTRICAS ─────────────────────────────────────────────────────── */}
       <div className="grid-stats">
@@ -328,13 +338,27 @@ export default function Home({ featuredProducts = [] }) {
 export async function getStaticProps() {
   try {
     const products = await fetchProducts()
-    const featured = products
-      .filter(p => (p.Estado === 'activo' || p.Estado === 'nuevo') && p.Stock > 0)
+    const visibles = products.filter(p => p.Estado === 'activo' || p.Estado === 'nuevo')
+
+    const featured = visibles
+      .filter(p => p.Stock > 0)
       .sort((a, b) => (b.PrecioOferta ? 1 : 0) - (a.PrecioOferta ? 1 : 0))
       .slice(0, 12)
-    return { props: { featuredProducts: featured }, revalidate: 60 }
+
+    // Ofertas reales: productos visibles con precio de oferta válido
+    const offers = visibles.filter(p => p.PrecioOferta && p.PrecioOferta < p.Precio)
+    const maxDiscount = offers.reduce((max, p) => {
+      const d = Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100)
+      return d > max ? d : max
+    }, 0)
+    const offerCategories = [...new Set(offers.map(p => p.Categoria).filter(Boolean))].slice(0, 4)
+
+    return {
+      props: { featuredProducts: featured, offersCount: offers.length, maxDiscount, offerCategories },
+      revalidate: 60,
+    }
   } catch (err) {
     console.error('Error fetching products:', err)
-    return { props: { featuredProducts: [] }, revalidate: 30 }
+    return { props: { featuredProducts: [], offersCount: 0, maxDiscount: 0, offerCategories: [] }, revalidate: 30 }
   }
 }
