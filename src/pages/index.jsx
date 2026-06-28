@@ -141,7 +141,7 @@ export default function Home({ featuredProducts = [] }) {
         <div style={{flex:1,zIndex:1,maxWidth:'480px'}}>
           <div style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'20px',display:'flex',alignItems:'center',gap:'10px'}}>
             <span style={{width:'24px',height:'1px',background:'var(--emerald-mist)',display:'inline-block'}} />
-            Nueva temporada 2025
+            Nueva temporada {new Date().getFullYear()}
           </div>
           <h1 style={{fontSize:'52px',fontWeight:700,lineHeight:1.08,letterSpacing:'-2px',color:'#fff',marginBottom:'20px'}}>
             Moda para<br/><em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>toda tu familia</em>
@@ -157,20 +157,24 @@ export default function Home({ featuredProducts = [] }) {
           </div>
         </div>
 
-        {/* Mini cards decorativas */}
+        {/* Mini cards: enlazan a su categoría */}
         <div className="hero-cards" style={{display:'flex',gap:'14px',alignItems:'center',zIndex:1,flexShrink:0}}>
-          {[{e:'👗',n:'Vestido Floral',p:65,o:90},{e:'👔',n:'Conjunto Casual',p:120,o:150,hl:true},{e:'🧒',n:'Set Niños',p:45,o:60}].map(c => (
-            <div key={c.n} style={{
+          {[{e:'👗',n:'Vestido Floral',p:65,o:90,href:'/mujer'},{e:'👔',n:'Conjunto Casual',p:120,o:150,hl:true,href:'/hombre'},{e:'🧒',n:'Set Niños',p:45,o:60,href:'/ninos'}].map(c => (
+            <Link key={c.n} href={c.href} style={{
+              textDecoration:'none', display:'block', cursor:'pointer',
               background: c.hl ? 'rgba(11,122,94,.15)' : 'rgba(255,255,255,.05)',
               border: c.hl ? '1px solid rgba(11,122,94,.4)' : '1px solid rgba(255,255,255,.1)',
               borderRadius:'6px', padding:'14px', width:'130px', textAlign:'center',
-              transform: c.hl ? 'scale(1.05)' : 'none'
-            }}>
+              transform: c.hl ? 'scale(1.05)' : 'none', transition:'border-color .15s'
+            }}
+              onMouseEnter={e=>e.currentTarget.style.borderColor='var(--emerald-mist)'}
+              onMouseLeave={e=>e.currentTarget.style.borderColor=c.hl ? 'rgba(11,122,94,.4)' : 'rgba(255,255,255,.1)'}
+            >
               <div style={{height:'80px',background:'rgba(255,255,255,.06)',borderRadius:'4px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px',marginBottom:'10px'}}>{c.e}</div>
               <p style={{fontSize:'11px',color:'rgba(255,255,255,.6)',marginBottom:'4px'}}>{c.n}</p>
               <p style={{fontSize:'14px',fontWeight:700,color:'#fff'}}>S/ {c.p}</p>
               <p style={{fontSize:'10px',color:'rgba(255,255,255,.3)',textDecoration:'line-through'}}>S/ {c.o}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
