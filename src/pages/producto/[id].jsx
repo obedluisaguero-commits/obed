@@ -128,9 +128,9 @@ export default function ProductPage({ product, related }) {
             <h1 className="font-playfair text-3xl font-bold text-slate-900 mb-3">{product.Nombre}</h1>
 
             <div className="flex items-center gap-1.5 mb-4">
-              <span className={`w-2 h-2 rounded-full ${liveStock > 5 ? 'bg-green-500' : liveStock > 0 ? 'bg-amber-400' : 'bg-red-400'}`} />
-              <span className={`text-sm font-poppins ${liveStock > 5 ? 'text-green-600' : liveStock > 0 ? 'text-amber-500' : 'text-red-500'}`}>
-                {liveStock > 5 ? `${liveStock} disponibles` : liveStock > 0 ? `¡Solo ${liveStock} unidades!` : 'Sin stock por el momento'}
+              <span className={`w-2 h-2 rounded-full ${liveStock > 0 ? 'bg-green-500' : 'bg-red-400'}`} />
+              <span className={`text-sm font-poppins ${liveStock > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                {liveStock > 0 ? 'Disponible' : 'Sin stock por el momento'}
               </span>
             </div>
 

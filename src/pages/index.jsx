@@ -59,11 +59,11 @@ function ProductCard({ product }) {
           {product.Nombre}
         </h3>
 
-        {/* Stock */}
+        {/* Disponibilidad (sin mostrar la cantidad) */}
         <div style={{display:'flex',alignItems:'center',gap:'4px',marginBottom:'8px'}}>
-          <span style={{width:'5px',height:'5px',borderRadius:'50%',background: product.Stock > 5 ? 'var(--emerald)' : product.Stock > 0 ? 'var(--warn)' : '#ccc',flexShrink:0}} />
-          <span style={{fontSize:'10px',fontWeight:500,letterSpacing:'.3px',color: product.Stock > 5 ? 'var(--emerald)' : product.Stock > 0 ? 'var(--warn)' : 'var(--light)'}}>
-            {product.Stock > 5 ? `${product.Stock} disponibles` : product.Stock > 0 ? `Solo ${product.Stock} unidades` : 'Sin stock'}
+          <span style={{width:'5px',height:'5px',borderRadius:'50%',background: product.Stock > 0 ? 'var(--emerald)' : '#ccc',flexShrink:0}} />
+          <span style={{fontSize:'10px',fontWeight:500,letterSpacing:'.3px',color: product.Stock > 0 ? 'var(--emerald)' : 'var(--light)'}}>
+            {product.Stock > 0 ? 'Disponible' : 'Sin stock'}
           </span>
         </div>
 
