@@ -158,26 +158,6 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
           </div>
         </div>
 
-        {/* Mini cards: enlazan a su categoría */}
-        <div className="hero-cards" style={{display:'flex',gap:'14px',alignItems:'center',zIndex:1,flexShrink:0}}>
-          {[{e:'👗',n:'Vestido Floral',p:65,o:90,href:'/mujer'},{e:'👔',n:'Conjunto Casual',p:120,o:150,hl:true,href:'/hombre'},{e:'🧒',n:'Set Niños',p:45,o:60,href:'/ninos'}].map(c => (
-            <Link key={c.n} href={c.href} style={{
-              textDecoration:'none', display:'block', cursor:'pointer',
-              background: c.hl ? 'rgba(11,122,94,.15)' : 'rgba(255,255,255,.05)',
-              border: c.hl ? '1px solid rgba(11,122,94,.4)' : '1px solid rgba(255,255,255,.1)',
-              borderRadius:'6px', padding:'14px', width:'130px', textAlign:'center',
-              transform: c.hl ? 'scale(1.05)' : 'none', transition:'border-color .15s'
-            }}
-              onMouseEnter={e=>e.currentTarget.style.borderColor='var(--emerald-mist)'}
-              onMouseLeave={e=>e.currentTarget.style.borderColor=c.hl ? 'rgba(11,122,94,.4)' : 'rgba(255,255,255,.1)'}
-            >
-              <div style={{height:'80px',background:'rgba(255,255,255,.06)',borderRadius:'4px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px',marginBottom:'10px'}}>{c.e}</div>
-              <p style={{fontSize:'11px',color:'rgba(255,255,255,.6)',marginBottom:'4px'}}>{c.n}</p>
-              <p style={{fontSize:'14px',fontWeight:700,color:'#fff'}}>S/ {c.p}</p>
-              <p style={{fontSize:'10px',color:'rgba(255,255,255,.3)',textDecoration:'line-through'}}>S/ {c.o}</p>
-            </Link>
-          ))}
-        </div>
       </section>
 
       {/* ── BARRA DE BENEFICIOS ───────────────────────────────────────────── */}
