@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts, fetchProductById, fetchRelatedProducts } from '../../lib/sheets'
 import { useCart } from '../../lib/cart'
+import { safeJsonLd } from '../../lib/jsonld'
 
 const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
 
@@ -56,7 +57,7 @@ export default function ProductPage({ product, related }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               '@context': 'https://schema.org',
               '@type': 'Product',
               name: product.Nombre,

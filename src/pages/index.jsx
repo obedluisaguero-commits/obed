@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts } from '../lib/sheets'
 import { useCart } from '../lib/cart'
+import { safeJsonLd } from '../lib/jsonld'
 
 const SEO = {
   title: "monky's | Moda para toda la familia – Huancayo, Perú",
@@ -128,7 +129,7 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
         <meta property="og:title" content={SEO.title} />
         <meta property="og:description" content={SEO.description} />
         <meta property="og:type" content="website" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
           '@context':'https://schema.org','@type':'ClothingStore',
           name:"monky's", url: SEO.canonical,
           address:{'@type':'PostalAddress',addressLocality:'Huancayo',addressRegion:'Junín',addressCountry:'PE'},
