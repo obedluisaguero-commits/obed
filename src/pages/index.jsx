@@ -129,6 +129,12 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
         <meta property="og:title" content={SEO.title} />
         <meta property="og:description" content={SEO.description} />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={SEO.canonical} />
+        <meta property="og:image" content={`${SEO.canonical}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={`${SEO.canonical}/og-image.png`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
           '@context':'https://schema.org','@type':'ClothingStore',
           name:"monky's", url: SEO.canonical,

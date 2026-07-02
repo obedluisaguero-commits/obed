@@ -1,5 +1,5 @@
 // pages/[categoria]/index.jsx — monky's · Estética premium
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -18,12 +18,19 @@ const CATEGORY_META = {
 
 function normalizar(t=''){return t.toString().replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g,'').replace(/\s+/g,' ').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 
+// Cantidad de productos que se muestran por tanda ("Ver más")
+const PAGE_SIZE = 24
+
 export default function CategoryPage({ categoria, products }) {
   const { addItem } = useCart()
   const meta = CATEGORY_META[categoria]
   const [activeSub, setActiveSub]   = useState('todas')
   const [activeSize, setActiveSize] = useState('todas')
   const [sort, setSort]             = useState('relevancia')
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+
+  // Al cambiar cualquier filtro, vuelve a la primera tanda
+  useEffect(() => { setVisibleCount(PAGE_SIZE) }, [activeSub, activeSize, sort, products])
 
   const sizes = useMemo(() => [...new Set(products.map(p => p.Talla).filter(Boolean))], [products])
 
@@ -125,7 +132,7 @@ export default function CategoryPage({ categoria, products }) {
         <main style={{flex:1,padding:'32px'}}>
           {filtered.length > 0 ? (
             <div className="category-grid">
-              {filtered.map(p => {
+              {filtered.slice(0, visibleCount).map(p => {
                 const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
                 const price = hasDiscount ? p.PrecioOferta : p.Precio
                 const discount = hasDiscount ? Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100) : 0
@@ -170,6 +177,15 @@ export default function CategoryPage({ categoria, products }) {
             <div style={{textAlign:'center',padding:'80px',color:'var(--light)'}}>
               <p style={{fontSize:'32px',marginBottom:'12px'}}>◎</p>
               <p style={{fontSize:'13px',letterSpacing:'.5px'}}>No hay productos con estos filtros</p>
+            </div>
+          )}
+
+          {/* Ver más: carga progresiva para no renderizar cientos de productos de golpe */}
+          {filtered.length > visibleCount && (
+            <div style={{textAlign:'center',marginTop:'32px'}}>
+              <button type="button" className="btn-outline" onClick={() => setVisibleCount(c => c + PAGE_SIZE)}>
+                Ver más productos ({filtered.length - visibleCount} restantes)
+              </button>
             </div>
           )}
         </main>

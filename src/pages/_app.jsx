@@ -213,8 +213,12 @@ function CartDrawer() {
 function Footer() {
   const cols = [
     { title: 'Colecciones', links: [['Mujer','/mujer'],['Hombre','/hombre'],['Niños','/ninos'],['Otros','/otros'],['Ofertas','/ofertas']] },
-    { title: 'Información', links: [['Guía de tallas','#'],['Política de cambios','#'],['Preguntas frecuentes','#'],['Sobre nosotros','#']] },
-    { title: 'Contacto', links: [['WhatsApp','#'],['Instagram','#'],['Facebook','#'],['Huancayo, Perú','#']] },
+    { title: 'Información', links: [['Guía de tallas','/guia-de-tallas'],['Política de cambios','/politica-de-cambios'],['Preguntas frecuentes','/preguntas-frecuentes'],['Sobre nosotros','/sobre-nosotros']] },
+    { title: 'Contacto', links: [
+      ['WhatsApp', `https://wa.me/${WPP_NUMBER}?text=${encodeURIComponent("Hola monky's 👋 quiero información sobre sus productos")}`],
+      ['Instagram', 'https://instagram.com/monkysstore'],
+      ['Huancayo, Perú', '/contacto'],
+    ] },
   ]
   return (
     <footer style={{background:'var(--anthracite)',padding:'48px 32px 24px'}}>
@@ -237,12 +241,19 @@ function Footer() {
           <div key={col.title} style={{flex:1}}>
             <p style={{fontSize:'10px',fontWeight:600,color:'rgba(255,255,255,.35)',letterSpacing:'2px',textTransform:'uppercase',marginBottom:'14px'}}>{col.title}</p>
             <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-              {col.links.map(([label, href]) => (
-                <Link key={label} href={href} style={{textDecoration:'none',fontSize:'12px',color:'rgba(255,255,255,.5)',transition:'color .15s'}}
-                  onMouseEnter={e=>e.currentTarget.style.color='#fff'}
-                  onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,.5)'}
-                >{label}</Link>
-              ))}
+              {col.links.map(([label, href]) => {
+                const externo = href.startsWith('http')
+                const estilo = {textDecoration:'none',fontSize:'12px',color:'rgba(255,255,255,.5)',transition:'color .15s'}
+                const hover = {
+                  onMouseEnter: e=>e.currentTarget.style.color='#fff',
+                  onMouseLeave: e=>e.currentTarget.style.color='rgba(255,255,255,.5)',
+                }
+                return externo ? (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" style={estilo} {...hover}>{label}</a>
+                ) : (
+                  <Link key={label} href={href} style={estilo} {...hover}>{label}</Link>
+                )
+              })}
             </div>
           </div>
         ))}

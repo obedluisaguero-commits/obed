@@ -1,7 +1,7 @@
 // pages/productos.jsx — Catálogo completo (todos los productos visibles)
 // Resuelve el enlace "Ver todos los productos" del inicio, que antes apuntaba
 // a una ruta inexistente (/productos → 404).
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -12,11 +12,18 @@ function normalizar(t = '') {
   return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
+// Cantidad de productos que se muestran por tanda ("Ver más")
+const PAGE_SIZE = 24
+
 export default function ProductosPage({ products }) {
   const { addItem } = useCart()
   const [cat, setCat] = useState('todas')
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const categories = useMemo(() => [...new Set(products.map((p) => p.Categoria).filter(Boolean))], [products])
   const filtered = cat === 'todas' ? products : products.filter((p) => normalizar(p.Categoria) === normalizar(cat))
+
+  // Al cambiar el filtro de categoría, vuelve a la primera tanda
+  useEffect(() => { setVisibleCount(PAGE_SIZE) }, [cat, products])
 
   return (
     <>
@@ -53,7 +60,7 @@ export default function ProductosPage({ products }) {
 
         {filtered.length > 0 ? (
           <div className="product-grid">
-            {filtered.map((p) => {
+            {filtered.slice(0, visibleCount).map((p) => {
               const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
               const price = hasDiscount ? p.PrecioOferta : p.Precio
               const discount = hasDiscount ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0
@@ -103,6 +110,15 @@ export default function ProductosPage({ products }) {
           <div style={{ textAlign: 'center', padding: '80px', color: 'var(--light)' }}>
             <p style={{ fontSize: '32px', marginBottom: '12px' }}>◎</p>
             <p style={{ fontSize: '13px', letterSpacing: '.5px' }}>No hay productos disponibles por el momento</p>
+          </div>
+        )}
+
+        {/* Ver más: carga progresiva */}
+        {filtered.length > visibleCount && (
+          <div style={{ textAlign: 'center', marginTop: '32px' }}>
+            <button type="button" className="btn-outline" onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+              Ver más productos ({filtered.length - visibleCount} restantes)
+            </button>
           </div>
         )}
       </div>
