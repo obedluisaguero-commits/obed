@@ -209,7 +209,7 @@ export default function ProductPage({ product, related }) {
                   >
                     <div className="relative h-40 bg-gradient-to-br from-[#F5F2EA] to-[#E9DFC9]">
                       {p.Imagen1 ? (
-                        <Image src={p.Imagen1} alt={p.Nombre} fill className="object-cover" sizes="200px" />
+                        <Image src={p.Imagen1} alt={p.Nombre} fill className="object-contain" sizes="200px" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-3xl">👗</div>
                       )}

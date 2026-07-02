@@ -38,7 +38,7 @@ function ProductCard({ product }) {
       {/* Imagen */}
       <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'52px',position:'relative',overflow:'hidden'}}>
         {product.Imagen1
-          ? <Image src={product.Imagen1} alt={product.Nombre} fill style={{objectFit:'cover'}} sizes="(max-width:768px) 50vw, 25vw" />
+          ? <Image src={product.Imagen1} alt={product.Nombre} fill style={{objectFit:'contain'}} sizes="(max-width:768px) 50vw, 25vw" />
           : <span>👗</span>
         }
         {hasDiscount && <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>}

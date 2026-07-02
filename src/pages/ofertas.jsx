@@ -50,7 +50,7 @@ export default function OfertasPage({ offers }) {
                 >
                   <Link href={`/producto/${p.ID}`} style={{textDecoration:'none',display:'block'}}>
                     <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden',cursor:'pointer'}}>
-                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'cover'}} sizes="25vw" /> : <span>👗</span>}
+                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'contain'}} sizes="25vw" /> : <span>👗</span>}
                       <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>
                     </div>
                   </Link>

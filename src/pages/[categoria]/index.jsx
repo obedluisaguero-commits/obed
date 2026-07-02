@@ -136,7 +136,7 @@ export default function CategoryPage({ categoria, products }) {
                   >
                     <Link href={`/producto/${p.ID}`} style={{textDecoration:'none',display:'block'}}>
                       <div style={{height:'180px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden',cursor:'pointer'}}>
-                        {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'cover'}} sizes="200px" /> : <span>👗</span>}
+                        {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'contain'}} sizes="200px" /> : <span>👗</span>}
                         {hasDiscount && <span className="badge-sale" style={{position:'absolute',top:'10px',left:'10px'}}>−{discount}%</span>}
                         {p.Estado==='nuevo' && !hasDiscount && <span className="badge-new" style={{position:'absolute',top:'10px',left:'10px'}}>Nuevo</span>}
                       </div>

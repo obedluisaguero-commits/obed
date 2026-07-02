@@ -64,7 +64,7 @@ export default function ProductosPage({ products }) {
                 >
                   <Link href={`/producto/${p.ID}`} style={{ textDecoration: 'none', display: 'block' }}>
                     <div style={{ height: '200px', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', position: 'relative', overflow: 'hidden' }}>
-                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{ objectFit: 'cover' }} sizes="25vw" /> : <span>👗</span>}
+                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{ objectFit: 'contain' }} sizes="25vw" /> : <span>👗</span>}
                       {hasDiscount && <span className="badge-sale" style={{ position: 'absolute', top: '12px', left: '12px' }}>−{discount}%</span>}
                       {p.Estado === 'nuevo' && !hasDiscount && <span className="badge-new" style={{ position: 'absolute', top: '12px', left: '12px' }}>Nuevo</span>}
                       {p.Stock === 0 && (

@@ -173,7 +173,7 @@ function CartDrawer() {
           ) : items.map((i) => (
             <div key={i.id} style={{display:'flex',gap:'12px',padding:'12px 20px',borderBottom:'1px solid var(--border)'}}>
               <div style={{width:'56px',height:'56px',flexShrink:0,background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px',overflow:'hidden',position:'relative'}}>
-                {i.imagen ? <Image src={i.imagen} alt={i.nombre} fill style={{objectFit:'cover'}} sizes="56px" /> : <span>👗</span>}
+                {i.imagen ? <Image src={i.imagen} alt={i.nombre} fill style={{objectFit:'contain'}} sizes="56px" /> : <span>👗</span>}
               </div>
               <div style={{flex:1,minWidth:0}}>
                 <p style={{fontSize:'12px',fontWeight:600,color:'var(--black)',lineHeight:1.3,marginBottom:'2px'}} className="line-clamp-2">{i.nombre}</p>
