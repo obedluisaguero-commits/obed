@@ -3,7 +3,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { WPP_NUMBER } from '../lib/config'
 
 export default function InfoPage({ title, description, path, children }) {
   return (

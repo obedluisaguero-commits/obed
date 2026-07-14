@@ -1,123 +1,45 @@
-// pages/index.jsx — monky's · Estética premium internacional
+// pages/index.jsx — monky's STORE · Home (rediseño 2026)
+// Hero verde con stats, banda de confianza, categorías con foto 4:5, banner de
+// ofertas reales, destacados con tabs y banner de WhatsApp.
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts } from '../lib/sheets'
-import { useCart } from '../lib/cart'
 import { safeJsonLd } from '../lib/jsonld'
+import { waLink, SITE_URL } from '../lib/config'
+import ProductCard from '../components/ProductCard'
 
 const SEO = {
   title: "monky's | Moda para toda la familia – Huancayo, Perú",
   description: 'Tienda de ropa moderna para mujer, hombre y niños. Vestidos, blusas, polos, casacas y más. Precios competitivos, envíos a todo Perú.',
-  canonical: 'https://monkysstore.pe',
+  canonical: SITE_URL,
 }
 
 const CATEGORIES = [
-  { num:'01', label:'Mujer',    sub:'Vestidos · Blusas · Lencería · Conjuntos', href:'/mujer',   accent:'var(--emerald)' },
-  { num:'02', label:'Hombre',   sub:'Casacas · Polos · Pantalones · Táctica',   href:'/hombre',  accent:'var(--navy)' },
-  { num:'03', label:'Niños',    sub:'Vestidos · Conjuntos · Ropa casual',        href:'/ninos',   accent:'var(--dark)' },
-  { num:'04', label:'Otros',    sub:'Hogar · Accesorios · Novedades',            href:'/otros',   accent:'var(--gold)' },
+  { slug: 'mujer',  name: 'Mujer',  subs: 'Vestidos · Blusas · Lencería' },
+  { slug: 'hombre', name: 'Hombre', subs: 'Casacas · Polos · Táctica' },
+  { slug: 'ninos',  name: 'Niños',  subs: 'Vestidos · Conjuntos' },
+  { slug: 'otros',  name: 'Otros',  subs: 'Hogar · Accesorios' },
 ]
 
+const WA_GENERAL = waLink("Hola Monky's Store, tengo una consulta.")
+
 function normalizarTexto(texto = '') {
-  return texto.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  return texto.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
-function ProductCard({ product }) {
-  const { addItem } = useCart()
-  const hasDiscount = product.PrecioOferta && product.PrecioOferta < product.Precio
-  const price = hasDiscount ? product.PrecioOferta : product.Precio
-  const discount = hasDiscount ? Math.round(((product.Precio - product.PrecioOferta) / product.Precio) * 100) : 0
+const eyebrow = { font: "600 11.5px 'Archivo',sans-serif", letterSpacing: '.28em', color: 'var(--gold)', textTransform: 'uppercase' }
+const h2 = { font: "750 38px/1.1 'Archivo',sans-serif", letterSpacing: '-.02em', margin: '10px 0 0', color: 'var(--ink)' }
 
-  return (
-    <div style={{background:'#fff',border:'1px solid var(--border)',cursor:'pointer',transition:'background .15s'}}
-      onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
-      onMouseLeave={e=>e.currentTarget.style.background='#fff'}
-    >
-      {/* Imagen */}
-      <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'52px',position:'relative',overflow:'hidden'}}>
-        {product.Imagen1
-          ? <Image src={product.Imagen1} alt={product.Nombre} fill style={{objectFit:'contain'}} sizes="(max-width:768px) 50vw, 25vw" />
-          : <span>👗</span>
-        }
-        {hasDiscount && <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>}
-        {product.Estado === 'nuevo' && !hasDiscount && <span className="badge-new" style={{position:'absolute',top:'12px',left:'12px'}}>Nuevo</span>}
-        {product.Stock === 0 && (
-          <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,.7)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <span style={{fontSize:'11px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)'}}>Sin stock</span>
-          </div>
-        )}
-      </div>
+export default function Home({ featuredProducts = [], offersCount = 0, maxDiscount = 0, totalProducts = 0, catImages = {} }) {
+  const [tab, setTab] = useState('todos')
 
-      {/* Body */}
-      <div style={{padding:'16px'}}>
-        <p style={{fontSize:'10px',color:'var(--light)',fontWeight:500,letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'5px'}}>
-          {product.Subcategoria}
-        </p>
-        <h3 style={{fontSize:'13px',fontWeight:500,color:'var(--black)',lineHeight:1.4,marginBottom:'8px'}} className="line-clamp-2">
-          {product.Nombre}
-        </h3>
-
-        {/* Disponibilidad (sin mostrar la cantidad) */}
-        <div style={{display:'flex',alignItems:'center',gap:'4px',marginBottom:'8px'}}>
-          <span style={{width:'5px',height:'5px',borderRadius:'50%',background: product.Stock > 0 ? 'var(--emerald)' : '#ccc',flexShrink:0}} />
-          <span style={{fontSize:'10px',fontWeight:500,letterSpacing:'.3px',color: product.Stock > 0 ? 'var(--emerald)' : 'var(--light)'}}>
-            {product.Stock > 0 ? 'Disponible' : 'Sin stock'}
-          </span>
-        </div>
-
-        {/* Talla / color */}
-        {(product.Talla || product.Color) && (
-          <div style={{display:'flex',gap:'6px',marginBottom:'10px',flexWrap:'wrap'}}>
-            {product.Talla && <span style={{fontSize:'10px',background:'var(--surface)',color:'var(--dark)',border:'1px solid var(--border)',padding:'2px 8px',letterSpacing:'.5px'}}>T: {product.Talla}</span>}
-            {product.Color && <span style={{fontSize:'10px',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'2px 8px'}}>{product.Color}</span>}
-          </div>
-        )}
-
-        {/* Precio */}
-        <div style={{display:'flex',alignItems:'baseline',gap:'8px',marginBottom:'12px'}}>
-          <span style={{fontSize:'16px',fontWeight:700,color:'var(--black)'}}>S/ {price}</span>
-          {hasDiscount && <span style={{fontSize:'12px',color:'var(--light)',textDecoration:'line-through'}}>S/ {product.Precio}</span>}
-          {hasDiscount && <span style={{fontSize:'9px',color:'var(--emerald)',fontWeight:700,letterSpacing:'.5px'}}>−{discount}%</span>}
-        </div>
-
-        {/* Botón */}
-        <div style={{display:'flex',gap:'6px'}}>
-          <button
-            type="button"
-            disabled={product.Stock <= 0}
-            onClick={() => addItem(product)}
-            style={{
-              flex:1, textAlign:'center', padding:'10px',
-              fontSize:'10px', fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase',
-              background: product.Stock > 0 ? 'var(--black)' : 'var(--surface)',
-              color: product.Stock > 0 ? '#fff' : 'var(--light)',
-              border:'none', cursor: product.Stock > 0 ? 'pointer' : 'default',
-              transition:'background .15s',
-            }}
-            onMouseEnter={e=>{ if(product.Stock > 0) e.currentTarget.style.background='var(--emerald)' }}
-            onMouseLeave={e=>{ if(product.Stock > 0) e.currentTarget.style.background='var(--black)' }}
-          >
-            {product.Stock > 0 ? 'Agregar' : 'Sin stock'}
-          </button>
-          <Link href={`/producto/${product.ID}`}
-            style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'10px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
-          >→</Link>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function Home({ featuredProducts = [], offersCount = 0, maxDiscount = 0, offerCategories = [] }) {
-  const [filter, setFilter] = useState('todos')
-
-  const filtered = filter === 'todos'
+  const filtered = tab === 'todos'
     ? featuredProducts
-    : featuredProducts.filter(p => normalizarTexto(p.Categoria) === normalizarTexto(filter))
+    : featuredProducts.filter((p) => normalizarTexto(p.Categoria) === normalizarTexto(tab))
 
-  const FILTERS = [['todos','Todos'],['mujer','Mujer'],['hombre','Hombre'],['ninos','Niños'],['otros','Otros']]
+  const TABS = [['todos', 'Todos'], ['mujer', 'Mujer'], ['hombre', 'Hombre'], ['ninos', 'Niños'], ['otros', 'Otros']]
 
   return (
     <>
@@ -136,104 +58,148 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={`${SEO.canonical}/og-image.png`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
-          '@context':'https://schema.org','@type':'ClothingStore',
-          name:"monky's", url: SEO.canonical,
-          address:{'@type':'PostalAddress',addressLocality:'Huancayo',addressRegion:'Junín',addressCountry:'PE'},
-          openingHours:'Mo-Sa 09:00-20:00'
-        })}} />
+          '@context': 'https://schema.org', '@type': 'ClothingStore',
+          name: "monky's", url: SEO.canonical,
+          address: { '@type': 'PostalAddress', addressLocality: 'Huancayo', addressRegion: 'Junín', addressCountry: 'PE' },
+          openingHours: 'Mo-Sa 09:00-20:00',
+        }) }} />
       </Head>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="hero section-pad" style={{background:'var(--anthracite)',color:'#fff',padding:'72px 32px',display:'flex',alignItems:'center',gap:'48px',position:'relative',overflow:'hidden'}}>
-        <div style={{flex:1,zIndex:1,maxWidth:'480px'}}>
-          <div style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'20px',display:'flex',alignItems:'center',gap:'10px'}}>
-            <span style={{width:'24px',height:'1px',background:'var(--emerald-mist)',display:'inline-block'}} />
-            Nueva temporada {new Date().getFullYear()}
-          </div>
-          <h1 style={{fontSize:'52px',fontWeight:700,lineHeight:1.08,letterSpacing:'-2px',color:'#fff',marginBottom:'20px'}}>
-            Moda para<br/><em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>toda tu familia</em>
-          </h1>
-          <p style={{fontSize:'14px',color:'rgba(255,255,255,.5)',lineHeight:1.7,marginBottom:'32px',fontWeight:300}}>
-            Ropa moderna, cómoda y a precios competitivos. Calidad peruana, estilo internacional.
-          </p>
-          <div style={{display:'flex',gap:'12px',flexWrap:'wrap'}}>
-            <Link href="/mujer" className="btn-primary" style={{textDecoration:'none',display:'inline-block'}}>Ver colección</Link>
-            <Link href="/ofertas" style={{textDecoration:'none',background:'transparent',color:'#fff',border:'1px solid rgba(255,255,255,.25)',padding:'13px 28px',fontSize:'11px',fontWeight:500,letterSpacing:'1px',textTransform:'uppercase'}}>
-              Ver ofertas
-            </Link>
-          </div>
-        </div>
-
-      </section>
-
-      {/* ── BARRA DE BENEFICIOS ───────────────────────────────────────────── */}
-      <div className="grid-benefits">
-        {[['↗','Envíos a todo Perú','Todas las regiones'],['◈','Pagos seguros','Yape · Plin · Transferencia'],['↺','Cambios en 7 días','Sin costo adicional'],['◉','Stock en tiempo real','Disponibilidad actualizada']].map(([icon,t,s])=>(
-          <div key={t} style={{padding:'18px 16px',textAlign:'center',borderRight:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px'}}>
-            <span style={{color:'var(--emerald)',fontSize:'18px',flexShrink:0}}>{icon}</span>
-            <div>
-              <p style={{fontSize:'11px',color:'var(--dark)',fontWeight:600,letterSpacing:'.2px'}}>{t}</p>
-              <p style={{fontSize:'10px',color:'var(--light)',marginTop:'1px'}}>{s}</p>
+      <section style={{ background: 'var(--green)', color: '#F5F2EA' }}>
+        <div className="wrap hero-grid" style={{ paddingTop: 64, paddingBottom: 72 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, font: "600 12px 'Archivo',sans-serif", letterSpacing: '.28em', color: 'var(--gold-light)' }}>
+              <span style={{ width: 34, height: 2, background: 'var(--gold-light)', display: 'inline-block' }} />
+              NUEVA TEMPORADA {new Date().getFullYear()}
+            </div>
+            <h1 style={{ font: "750 clamp(48px,5.2vw,72px)/1.04 'Archivo',sans-serif", letterSpacing: '-.03em', margin: '22px 0 0' }}>
+              Moda para<br /><span style={{ color: 'var(--gold-light)' }}>toda tu familia</span>
+            </h1>
+            <p style={{ fontSize: 17, lineHeight: 1.65, color: 'rgba(245,242,234,.72)', maxWidth: 440, margin: '22px 0 34px' }}>
+              Ropa moderna, cómoda y a precios competitivos. Calidad peruana, estilo internacional.
+            </p>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+              <Link href="/mujer" style={{ height: 52, padding: '0 30px', borderRadius: 99, background: '#F5F2EA', color: 'var(--green)', font: "700 13px 'Archivo',sans-serif", letterSpacing: '.1em', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+                VER COLECCIÓN
+              </Link>
+              <Link href="/ofertas" style={{ height: 52, padding: '0 28px', border: '1px solid rgba(245,242,234,.35)', borderRadius: 99, background: 'transparent', color: '#F5F2EA', font: "700 13px 'Archivo',sans-serif", letterSpacing: '.1em', display: 'inline-flex', alignItems: 'center', textDecoration: 'none', transition: 'border-color .15s,color .15s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-light)'; e.currentTarget.style.color = 'var(--gold-light)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(245,242,234,.35)'; e.currentTarget.style.color = '#F5F2EA' }}
+              >
+                VER OFERTAS
+              </Link>
+            </div>
+            <div className="stats-row">
+              <div>
+                <div style={{ font: "750 26px 'Archivo',sans-serif" }}>{totalProducts}+</div>
+                <div style={{ fontSize: 12.5, color: 'rgba(245,242,234,.6)', marginTop: 2 }}>productos</div>
+              </div>
+              <div style={{ width: 1, background: 'rgba(245,242,234,.18)' }} />
+              <div>
+                <div style={{ font: "750 26px 'Archivo',sans-serif" }}>24-72h</div>
+                <div style={{ fontSize: 12.5, color: 'rgba(245,242,234,.6)', marginTop: 2 }}>envío a todo Perú</div>
+              </div>
+              <div style={{ width: 1, background: 'rgba(245,242,234,.18)' }} />
+              <div>
+                <div style={{ font: "750 26px 'Archivo',sans-serif" }}>7 días</div>
+                <div style={{ fontSize: 12.5, color: 'rgba(245,242,234,.6)', marginTop: 2 }}>para cambios</div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* ── CATEGORÍAS ───────────────────────────────────────────────────── */}
-      <section style={{padding:'64px 32px 0'}}>
-        <div style={{marginBottom:'40px'}}>
-          <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald)',marginBottom:'10px'}}>Colecciones</p>
-          <h2 style={{fontSize:'32px',fontWeight:700,letterSpacing:'-1px',color:'var(--black)'}}>Explora por categoría</h2>
-          <p style={{fontSize:'13px',color:'var(--mid)',marginTop:'6px',fontWeight:300}}>Todo lo que tu familia necesita en un solo lugar</p>
-        </div>
-        <div className="grid-cats">
-          {CATEGORIES.map(cat => (
-            <Link key={cat.href} href={cat.href} style={{textDecoration:'none',background:'#fff',padding:'36px 28px',cursor:'pointer',position:'relative',transition:'background .15s',display:'block'}}
-              onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
-              onMouseLeave={e=>e.currentTarget.style.background='#fff'}
-            >
-              <p style={{fontSize:'11px',color:'var(--light)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>{cat.num}</p>
-              <div style={{width:'32px',height:'2px',background:cat.accent,marginBottom:'14px'}} />
-              <p style={{fontSize:'20px',fontWeight:700,color:'var(--black)',letterSpacing:'-0.5px',marginBottom:'4px'}}>{cat.label}</p>
-              <p style={{fontSize:'11px',color:'var(--mid)',letterSpacing:'.2px'}}>{cat.sub}</p>
-              <span style={{position:'absolute',right:'24px',top:'50%',transform:'translateY(-50%)',color:'var(--light)',fontSize:'18px'}}>→</span>
-            </Link>
-          ))}
-          {/* Bloque Ofertas (solo si hay ofertas reales) */}
-          {offersCount > 0 && (
-            <Link href="/ofertas" className="cats-ofertas" style={{textDecoration:'none',background:'var(--black)',padding:'36px 28px',cursor:'pointer',position:'relative',display:'block',transition:'background .15s'}}
-              onMouseEnter={e=>e.currentTarget.style.background='#1a1a1a'}
-              onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-            >
-              <p style={{fontSize:'11px',color:'rgba(255,255,255,.3)',fontWeight:500,letterSpacing:'2px',marginBottom:'12px'}}>05</p>
-              <div style={{width:'32px',height:'2px',background:'var(--emerald-mist)',marginBottom:'14px'}} />
-              <p style={{fontSize:'24px',fontWeight:700,color:'#fff',letterSpacing:'-1px',marginBottom:'4px'}}>Ofertas especiales</p>
-              <p style={{fontSize:'12px',color:'rgba(255,255,255,.4)'}}>
-                {maxDiscount > 0 ? `Hasta ${maxDiscount}% de descuento · ` : ''}{offersCount} {offersCount === 1 ? 'producto en oferta' : 'productos en oferta'}
-              </p>
-              <span style={{position:'absolute',right:'32px',top:'50%',transform:'translateY(-50%)',color:'rgba(255,255,255,.3)',fontSize:'24px'}}>→</span>
-            </Link>
-          )}
+          <div className="hero-visual" style={{ position: 'relative', height: 520, borderRadius: 24, overflow: 'hidden', background: 'var(--green-deep)' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Image src="/monkys-avatar.svg" alt="monky&apos;s STORE" width={210} height={210} priority />
+            </div>
+            <div style={{ position: 'absolute', top: 18, right: 18, background: 'rgba(11,46,35,.85)', backdropFilter: 'blur(6px)', color: '#F5F2EA', border: '1px solid rgba(245,242,234,.15)', borderRadius: 99, padding: '9px 16px', font: "600 12px 'Archivo',sans-serif", letterSpacing: '.06em', pointerEvents: 'none' }}>
+              Stock en tiempo real
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── PRODUCTOS DESTACADOS ──────────────────────────────────────────── */}
-      <section style={{padding:'64px 32px'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:'32px',flexWrap:'wrap',gap:'16px'}}>
+      {/* ── BANDA DE CONFIANZA ───────────────────────────────────────────── */}
+      <section style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>
+        <div className="wrap grid-trust" style={{ paddingTop: 26, paddingBottom: 26 }}>
+          {[
+            ['↗', 'Envíos a todo Perú', 'Todas las regiones'],
+            ['◈', 'Pagos seguros', 'Yape · Plin · Transferencia'],
+            ['↺', 'Cambios en 7 días', 'Sin costo adicional'],
+            ['●', 'Stock en tiempo real', 'Disponibilidad actualizada'],
+          ].map(([glyph, title, sub]) => (
+            <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 99, background: 'var(--surface-2)', color: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Archivo',sans-serif", flex: 'none' }}>{glyph}</div>
+              <div>
+                <div style={{ font: "600 13.5px 'Instrument Sans',sans-serif", color: 'var(--ink)' }}>{title}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 1 }}>{sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CATEGORÍAS ───────────────────────────────────────────────────── */}
+      <section className="wrap" style={{ paddingTop: 72, paddingBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: 20, marginBottom: 34, flexWrap: 'wrap' }}>
           <div>
-            <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald)',marginBottom:'10px'}}>Más vendidos</p>
-            <h2 style={{fontSize:'32px',fontWeight:700,letterSpacing:'-1px',color:'var(--black)'}}>Productos destacados</h2>
+            <div style={eyebrow}>COLECCIONES</div>
+            <h2 style={h2}>Explora por categoría</h2>
           </div>
-          {/* Filtros */}
-          <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-            {FILTERS.map(([val,label]) => (
-              <button key={val} onClick={() => setFilter(val)}
+          <div style={{ fontSize: 14, color: 'var(--text-3)', paddingBottom: 6 }}>Todo lo que tu familia necesita en un solo lugar</div>
+        </div>
+        <div className="grid-cats">
+          {CATEGORIES.map((c) => (
+            <Link key={c.slug} href={`/${c.slug}`} className="catcard">
+              <div style={{ position: 'relative', aspectRatio: '4/5', background: 'var(--surface)' }}>
+                {catImages[c.slug] ? (
+                  <Image src={catImages[c.slug]} alt={c.name} fill style={{ objectFit: 'contain' }} sizes="(max-width:1024px) 50vw, 25vw" />
+                ) : (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "800 44px 'Archivo',sans-serif", color: 'rgba(16,36,29,.14)' }}>{c.name}</div>
+                )}
+              </div>
+              <div style={{ padding: '16px 18px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ font: "700 18px 'Archivo',sans-serif", letterSpacing: '-.01em', color: 'var(--ink)' }}>{c.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 3 }}>{c.subs}</div>
+                </div>
+                <div style={{ width: 34, height: 34, borderRadius: 99, border: '1px solid rgba(16,36,29,.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)', flex: 'none' }}>→</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Banner de ofertas — solo con ofertas reales */}
+        {offersCount > 0 && (
+          <Link href="/ofertas" className="lift" style={{ marginTop: 20, background: 'var(--green-deep)', color: '#F5F2EA', borderRadius: 18, padding: '30px 34px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
+            <div>
+              <div style={{ font: "600 11px 'Archivo',sans-serif", letterSpacing: '.28em', color: 'var(--gold-light)' }}>05 — OFERTAS</div>
+              <div style={{ font: "750 26px 'Archivo',sans-serif", letterSpacing: '-.01em', marginTop: 8 }}>Ofertas especiales</div>
+              <div style={{ fontSize: 13.5, color: 'rgba(245,242,234,.65)', marginTop: 5 }}>
+                {maxDiscount > 0 ? `Hasta ${maxDiscount}% de descuento · ` : ''}{offersCount} {offersCount === 1 ? 'producto en oferta' : 'productos en oferta'}
+              </div>
+            </div>
+            <div style={{ width: 46, height: 46, borderRadius: 99, background: 'var(--gold-light)', color: 'var(--green-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flex: 'none' }}>→</div>
+          </Link>
+        )}
+      </section>
+
+      {/* ── DESTACADOS ───────────────────────────────────────────────────── */}
+      <section className="wrap" style={{ paddingTop: 72, paddingBottom: 72 }}>
+        <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginBottom: 30 }}>
+          <div>
+            <div style={eyebrow}>MÁS VENDIDOS</div>
+            <h2 style={h2}>Productos destacados</h2>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {TABS.map(([val, label]) => (
+              <button key={val} type="button" onClick={() => setTab(val)}
                 style={{
-                  background: filter === val ? 'var(--black)' : 'transparent',
-                  color: filter === val ? '#fff' : 'var(--mid)',
-                  border: filter === val ? '1px solid var(--black)' : '1px solid var(--border)',
-                  padding:'7px 16px', fontSize:'11px', fontWeight:600, letterSpacing:'1px',
-                  textTransform:'uppercase', cursor:'pointer', transition:'all .15s',
+                  height: 36, padding: '0 16px', borderRadius: 99,
+                  border: `1px solid ${tab === val ? 'var(--green)' : 'var(--border-strong)'}`,
+                  background: tab === val ? 'var(--green)' : '#fff',
+                  color: tab === val ? '#F5F2EA' : '#3D4C45',
+                  font: "600 12px 'Archivo',sans-serif", letterSpacing: '.06em', textTransform: 'uppercase', cursor: 'pointer',
                 }}
               >{label}</button>
             ))}
@@ -242,80 +208,32 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
 
         {filtered.length > 0 ? (
           <div className="product-grid">
-            {filtered.slice(0,8).map(p => <ProductCard key={p.ID} product={p} />)}
+            {filtered.slice(0, 8).map((p) => <ProductCard key={p.ID} product={p} />)}
           </div>
         ) : (
-          <div style={{textAlign:'center',padding:'64px',color:'var(--light)'}}>
-            <p style={{fontSize:'32px',marginBottom:'12px'}}>◎</p>
-            <p style={{fontSize:'13px',letterSpacing:'.5px'}}>No hay productos en esta categoría por el momento</p>
+          <div style={{ textAlign: 'center', padding: 70, color: 'var(--text-3)' }}>
+            <div style={{ font: "700 18px 'Archivo',sans-serif", color: 'var(--ink)', marginBottom: 6 }}>Sin productos por ahora</div>
+            <div style={{ fontSize: 14 }}>No hay productos en esta categoría por el momento.</div>
           </div>
         )}
 
-        <div style={{textAlign:'center',marginTop:'40px'}}>
-          <Link href="/productos" className="btn-outline" style={{textDecoration:'none',display:'inline-block'}}>
-            Ver todos los productos →
-          </Link>
+        <div style={{ textAlign: 'center', marginTop: 36 }}>
+          <Link href="/productos" className="btn-outline" style={{ textDecoration: 'none' }}>Ver todos los productos →</Link>
         </div>
       </section>
 
-      {/* ── BANNER PROMO (solo si hay ofertas reales) ────────────────────── */}
-      {offersCount > 0 && (
-        <section style={{background:'var(--black)',padding:'72px 32px',textAlign:'center'}}>
-          <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'16px'}}>Ofertas</p>
-          <h2 style={{fontSize:'44px',fontWeight:700,color:'#fff',letterSpacing:'-1.5px',marginBottom:'8px'}}>
-            {maxDiscount > 0
-              ? <>Hasta <em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>{maxDiscount}% OFF</em></>
-              : <>Ofertas <em style={{fontStyle:'normal',color:'var(--emerald-mist)'}}>especiales</em></>}
-          </h2>
-          <p style={{fontSize:'13px',color:'rgba(255,255,255,.35)',marginBottom:'28px',fontWeight:300}}>
-            {offersCount} {offersCount === 1 ? 'producto con descuento' : 'productos con descuento'}
-          </p>
-          {offerCategories.length > 0 && (
-            <div style={{display:'flex',gap:'8px',justifyContent:'center',flexWrap:'wrap',marginBottom:'32px'}}>
-              {offerCategories.map(c => (
-                <span key={c} style={{border:'1px solid rgba(255,255,255,.15)',color:'rgba(255,255,255,.6)',padding:'7px 18px',fontSize:'11px',letterSpacing:'.5px',textTransform:'uppercase'}}>Ofertas en {c}</span>
-              ))}
-            </div>
-          )}
-          <Link href="/ofertas" className="btn-primary" style={{textDecoration:'none',display:'inline-block',padding:'14px 40px',letterSpacing:'2px'}}>
-            Ver todas las ofertas
-          </Link>
-        </section>
-      )}
-
-      {/* ── MÉTRICAS ─────────────────────────────────────────────────────── */}
-      <div className="grid-stats">
-        {[['99%','Satisfacción','Clientes que vuelven a comprar'],['24h','Respuesta','Atención WhatsApp todos los días'],['7d','Cambios','Sin costo por talla incorrecta'],['PE','Todo el Perú','Envíos a todas las regiones']].map(([n,t,d])=>(
-          <div key={t} style={{background:'var(--surface)',padding:'32px 24px',textAlign:'center'}}>
-            <p style={{fontSize:'30px',fontWeight:700,color:'var(--emerald)',letterSpacing:'-1px',marginBottom:'6px'}}>{n}</p>
-            <p style={{fontSize:'11px',fontWeight:700,color:'var(--black)',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:'4px'}}>{t}</p>
-            <p style={{fontSize:'11px',color:'var(--mid)',lineHeight:1.5}}>{d}</p>
+      {/* ── BANNER WHATSAPP ──────────────────────────────────────────────── */}
+      <section className="wrap" style={{ paddingBottom: 80 }}>
+        <div className="wa-banner" style={{ background: 'var(--green)', borderRadius: 24, padding: '52px 56px', color: '#F5F2EA' }}>
+          <div style={{ maxWidth: 560 }}>
+            <h3 style={{ font: "750 30px/1.2 'Archivo',sans-serif", letterSpacing: '-.01em', margin: 0 }}>¿Dudas con tallas o disponibilidad?</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.6, color: 'rgba(245,242,234,.7)', margin: '12px 0 0' }}>
+              Escríbenos por WhatsApp y te asesoramos al instante. Confirmamos tu pedido, coordinamos el pago con Yape, Plin o transferencia, y lo enviamos a cualquier región.
+            </p>
           </div>
-        ))}
-      </div>
-
-      {/* ── TESTIMONIOS ──────────────────────────────────────────────────── */}
-      <section style={{padding:'64px 32px',background:'#fff'}}>
-        <div style={{marginBottom:'40px'}}>
-          <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald)',marginBottom:'10px'}}>Testimonios</p>
-          <h2 style={{fontSize:'32px',fontWeight:700,letterSpacing:'-1px',color:'var(--black)'}}>Lo que dicen nuestras clientas</h2>
-        </div>
-        <div className="grid-3">
-          {[
-            {q:'"Compré un vestido para mi hija y llegó perfecto. La calidad es increíble para el precio. Ya pedí tres cosas más."',n:'María P.',l:'Huancayo, Junín'},
-            {q:'"Los polos de mi esposo quedaron perfectos. El trato por WhatsApp fue muy amable y el delivery súper rápido."',n:'Lucía R.',l:'Lima, Lima'},
-            {q:'"Encontré ropa para toda la familia en un solo lugar y a muy buenos precios. Totalmente recomendado."',n:'Carmen R.',l:'Arequipa, Arequipa'},
-          ].map(t => (
-            <div key={t.n} style={{border:'1px solid var(--border)',padding:'24px'}}>
-              <div style={{display:'flex',gap:'3px',marginBottom:'16px'}}>
-                {[0,1,2,3,4].map(i => <span key={i} style={{width:'10px',height:'10px',background:'var(--black)',display:'inline-block'}} />)}
-              </div>
-              <p style={{fontSize:'13px',color:'var(--dark)',lineHeight:1.7,marginBottom:'18px',fontWeight:300}}>{t.q}</p>
-              <div style={{width:'24px',height:'1px',background:'var(--emerald)',marginBottom:'12px'}} />
-              <p style={{fontSize:'12px',fontWeight:700,color:'var(--black)',letterSpacing:'.3px',textTransform:'uppercase'}}>{t.n}</p>
-              <p style={{fontSize:'11px',color:'var(--light)',marginTop:'2px'}}>{t.l}</p>
-            </div>
-          ))}
+          <a href={WA_GENERAL} target="_blank" rel="noopener noreferrer" className="btn-gold" style={{ height: 54, padding: '0 32px', textDecoration: 'none', flex: 'none' }}>
+            ESCRÍBENOS
+          </a>
         </div>
       </section>
     </>
@@ -325,27 +243,33 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
 export async function getStaticProps() {
   try {
     const products = await fetchProducts()
-    const visibles = products.filter(p => p.Estado === 'activo' || p.Estado === 'nuevo')
+    const visibles = products.filter((p) => p.Estado === 'activo' || p.Estado === 'nuevo')
 
     const featured = visibles
-      .filter(p => p.Stock > 0)
+      .filter((p) => p.Stock > 0)
       .sort((a, b) => (b.PrecioOferta ? 1 : 0) - (a.PrecioOferta ? 1 : 0))
       .slice(0, 12)
 
-    // Ofertas reales: productos visibles con precio de oferta válido
-    const offers = visibles.filter(p => p.PrecioOferta && p.PrecioOferta < p.Precio)
+    const offers = visibles.filter((p) => p.PrecioOferta && p.PrecioOferta < p.Precio)
     const maxDiscount = offers.reduce((max, p) => {
       const d = Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100)
       return d > max ? d : max
     }, 0)
-    const offerCategories = [...new Set(offers.map(p => p.Categoria).filter(Boolean))].slice(0, 4)
+
+    // Foto representativa por categoría (primer producto visible con imagen)
+    const slugDe = (cat = '') => cat.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    const catImages = {}
+    for (const p of visibles) {
+      const slug = slugDe(p.Categoria)
+      if (p.Imagen1 && !catImages[slug]) catImages[slug] = p.Imagen1
+    }
 
     return {
-      props: { featuredProducts: featured, offersCount: offers.length, maxDiscount, offerCategories },
+      props: { featuredProducts: featured, offersCount: offers.length, maxDiscount, totalProducts: visibles.length, catImages },
       revalidate: 60,
     }
   } catch (err) {
     console.error('Error fetching products:', err)
-    return { props: { featuredProducts: [], offersCount: 0, maxDiscount: 0, offerCategories: [] }, revalidate: 30 }
+    return { props: { featuredProducts: [], offersCount: 0, maxDiscount: 0, totalProducts: 0, catImages: {} }, revalidate: 30 }
   }
 }

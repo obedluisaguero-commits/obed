@@ -1,32 +1,34 @@
-// pages/[categoria]/index.jsx — monky's · Estética premium
+// pages/[categoria]/index.jsx — Catálogo por categoría (rediseño 2026)
+// Sidebar sticky 230px: subcategorías dinámicas con contador, chips de talla y
+// orden. Grid de 3 columnas con ProductCard y paginación "Ver más".
 import { useState, useMemo, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import Image from 'next/image'
 import { fetchProductsByCategory } from '../../lib/sheets'
-import { useCart } from '../../lib/cart'
+import { SITE_URL } from '../../lib/config'
+import ProductCard from '../../components/ProductCard'
 
-// Solo metadatos de presentación (nombre y color de acento). Las subcategorías
-// NO se definen aquí: se generan dinámicamente desde los productos reales de
-// cada categoría, para que el menú siempre coincida con la hoja.
 const CATEGORY_META = {
-  mujer:  { label: 'Mujer',  accent: 'var(--emerald)' },
-  hombre: { label: 'Hombre', accent: 'var(--navy)' },
-  ninos:  { label: 'Niños',  accent: 'var(--dark)' },
-  otros:  { label: 'Otros',  accent: 'var(--gold)' },
+  mujer:  { label: 'Mujer' },
+  hombre: { label: 'Hombre' },
+  ninos:  { label: 'Niños' },
+  otros:  { label: 'Otros' },
 }
 
-function normalizar(t=''){return t.toString().replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g,'').replace(/\s+/g,' ').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function normalizar(t=''){return t.toString().replace(/[​-‍⁠﻿­]/g,'').replace(/\s+/g,' ').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+
+const pct = (p) => (p.PrecioOferta && p.PrecioOferta < p.Precio ? Math.round(((p.Precio - p.PrecioOferta) / p.Precio) * 100) : 0)
 
 // Cantidad de productos que se muestran por tanda ("Ver más")
 const PAGE_SIZE = 24
 
+const sideTitle = { font: "600 11px 'Archivo',sans-serif", letterSpacing: '.24em', color: 'var(--text-3)', marginBottom: 14 }
+
 export default function CategoryPage({ categoria, products }) {
-  const { addItem } = useCart()
   const meta = CATEGORY_META[categoria]
   const [activeSub, setActiveSub]   = useState('todas')
   const [activeSize, setActiveSize] = useState('todas')
-  const [sort, setSort]             = useState('relevancia')
+  const [sort, setSort]             = useState('rel')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   // Al cambiar cualquier filtro, vuelve a la primera tanda
@@ -34,161 +36,128 @@ export default function CategoryPage({ categoria, products }) {
 
   const sizes = useMemo(() => [...new Set(products.map(p => p.Talla).filter(Boolean))], [products])
 
-  // Subcategorías 100% dinámicas: se toman de los productos reales de esta
-  // categoría, sin duplicados (ignorando mayúsculas/tildes) y ordenadas
-  // alfabéticamente. Así el menú siempre coincide con la hoja, sin pestañas
-  // "fantasma" que no tengan productos.
+  // Subcategorías 100% dinámicas desde los productos reales, con contador.
   const subcats = useMemo(() => {
-    const vistos = new Map() // clave normalizada -> texto a mostrar
+    const vistos = new Map() // clave normalizada -> { label, count }
     for (const p of products) {
       const raw = (p.Subcategoria || '').trim()
       if (!raw) continue
       const key = normalizar(raw)
-      if (!vistos.has(key)) vistos.set(key, raw)
+      if (!vistos.has(key)) vistos.set(key, { label: raw, count: 0 })
+      vistos.get(key).count++
     }
-    return [...vistos.values()].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
+    return [...vistos.values()].sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }))
   }, [products])
 
   const filtered = useMemo(() => {
     let list = [...products]
     if (activeSub  !== 'todas') list = list.filter(p => normalizar(p.Subcategoria) === normalizar(activeSub))
     if (activeSize !== 'todas') list = list.filter(p => p.Talla === activeSize)
-    if (sort === 'precio-asc')  list.sort((a,b) => (a.PrecioOferta||a.Precio)-(b.PrecioOferta||b.Precio))
-    if (sort === 'precio-desc') list.sort((a,b) => (b.PrecioOferta||b.Precio)-(a.PrecioOferta||a.Precio))
-    if (sort === 'nuevo')       list = list.filter(p=>p.Estado==='nuevo').concat(list.filter(p=>p.Estado!=='nuevo'))
+    if (sort === 'asc')  list.sort((a,b) => (a.PrecioOferta||a.Precio)-(b.PrecioOferta||b.Precio))
+    if (sort === 'desc') list.sort((a,b) => (b.PrecioOferta||b.Precio)-(a.PrecioOferta||a.Precio))
+    if (sort === 'dcto') list.sort((a,b) => pct(b)-pct(a))
     return list
   }, [products, activeSub, activeSize, sort])
 
-  const activeBtn  = { background:'var(--black)', color:'#fff', border:'1px solid var(--black)' }
-  const inactiveBtn= { background:'transparent',  color:'var(--mid)', border:'1px solid var(--border)' }
+  const chip = (active) => ({
+    minWidth: 42, height: 36, padding: '0 12px', borderRadius: 10,
+    border: `1px solid ${active ? 'var(--green)' : 'var(--border-strong)'}`,
+    background: active ? 'var(--green)' : '#fff',
+    color: active ? '#F5F2EA' : 'var(--ink)',
+    font: "600 12.5px 'Archivo',sans-serif", cursor: 'pointer',
+  })
 
   return (
     <>
       <Head>
         <title>{`${meta.label} | monky's`}</title>
-        <meta name="description" content={`${meta.label} en monky's${subcats.length ? ': ' + subcats.slice(0, 8).join(', ') : ''}. Envíos a todo Perú.`} />
-        <link rel="canonical" href={`https://monkysstore.pe/${categoria}`} />
+        <meta name="description" content={`${meta.label} en monky's${subcats.length ? ': ' + subcats.slice(0, 8).map(s => s.label).join(', ') : ''}. Envíos a todo Perú.`} />
+        <link rel="canonical" href={`${SITE_URL}/${categoria}`} />
       </Head>
 
-      {/* Header de categoría */}
-      <div style={{borderBottom:'1px solid var(--border)',padding:'40px 32px 32px'}}>
-        <nav style={{fontSize:'11px',color:'var(--light)',display:'flex',gap:'8px',alignItems:'center',marginBottom:'16px',letterSpacing:'.3px'}}>
-          <Link href="/" style={{color:'var(--mid)',textDecoration:'none'}}>Inicio</Link>
+      <div className="wrap" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        {/* Breadcrumb + título */}
+        <div style={{ fontSize: 13, color: 'var(--text-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Link href="/" style={{ color: 'var(--green)', textDecoration: 'none' }}>Inicio</Link>
           <span>·</span>
-          <span style={{color:'var(--black)'}}>{meta.label}</span>
-        </nav>
-        <div style={{display:'flex',alignItems:'baseline',gap:'16px',flexWrap:'wrap'}}>
-          <h1 style={{fontSize:'40px',fontWeight:700,letterSpacing:'-1.5px',color:'var(--black)'}}>{meta.label}</h1>
-          <span style={{fontSize:'13px',color:'var(--light)',letterSpacing:'.3px'}}>{filtered.length} productos</span>
+          <span>{meta.label}</span>
         </div>
-        <div style={{width:'40px',height:'2px',background:meta.accent,marginTop:'14px'}} />
-      </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, margin: '14px 0 8px', flexWrap: 'wrap' }}>
+          <h1 style={{ font: "750 46px/1 'Archivo',sans-serif", letterSpacing: '-.02em', margin: 0, color: 'var(--ink)' }}>{meta.label}</h1>
+          <span style={{ fontSize: 14.5, color: 'var(--text-3)' }}>{filtered.length} productos</span>
+        </div>
+        <div style={{ width: 44, height: 3, background: 'var(--gold)', margin: '14px 0 34px' }} />
 
-      <div className="category-layout">
-        {/* Sidebar filtros */}
-        <aside className="category-sidebar">
-          <div style={{marginBottom:'28px'}}>
-            <p style={{fontSize:'10px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)',marginBottom:'12px'}}>Subcategoría</p>
-            <div style={{display:'flex',flexDirection:'column',gap:'2px'}}>
-              {['todas',...subcats].map(s => (
-                <button key={s} onClick={()=>setActiveSub(s)} style={{
-                  textAlign:'left', padding:'8px 10px', fontSize:'12px', cursor:'pointer', border:'none',
-                  background: activeSub===s ? 'var(--surface)' : 'transparent',
-                  color: activeSub===s ? 'var(--black)' : 'var(--mid)',
-                  fontWeight: activeSub===s ? 600 : 400,
-                  letterSpacing:'.2px', transition:'all .1s'
-                }}>{s === 'todas' ? 'Todas' : s}</button>
-              ))}
-            </div>
-          </div>
-
-          {sizes.length > 0 && (
-            <div style={{marginBottom:'28px'}}>
-              <p style={{fontSize:'10px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)',marginBottom:'12px'}}>Talla</p>
-              <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>
-                {['todas',...sizes].map(sz => (
-                  <button key={sz} onClick={()=>setActiveSize(sz)} style={{
-                    ...( activeSize===sz ? activeBtn : inactiveBtn ),
-                    padding:'5px 10px', fontSize:'10px', fontWeight:600,
-                    letterSpacing:'.5px', textTransform:'uppercase', cursor:'pointer', transition:'all .1s'
-                  }}>{sz==='todas'?'All':sz}</button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <p style={{fontSize:'10px',fontWeight:700,letterSpacing:'2px',textTransform:'uppercase',color:'var(--mid)',marginBottom:'12px'}}>Ordenar</p>
-            <select value={sort} onChange={e=>setSort(e.target.value)} style={{width:'100%',fontSize:'11px',border:'1px solid var(--border)',padding:'8px 10px',color:'var(--dark)',background:'#fff',appearance:'none',cursor:'pointer'}}>
-              <option value="relevancia">Relevancia</option>
-              <option value="precio-asc">Precio: menor a mayor</option>
-              <option value="precio-desc">Precio: mayor a menor</option>
-              <option value="nuevo">Más nuevos primero</option>
-            </select>
-          </div>
-        </aside>
-
-        {/* Grid de productos */}
-        <main style={{flex:1,padding:'32px'}}>
-          {filtered.length > 0 ? (
-            <div className="category-grid">
-              {filtered.slice(0, visibleCount).map(p => {
-                const hasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
-                const price = hasDiscount ? p.PrecioOferta : p.Precio
-                const discount = hasDiscount ? Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100) : 0
+        <div className="category-layout">
+          {/* Sidebar filtros */}
+          <aside className="category-sidebar">
+            <div style={sideTitle}>SUBCATEGORÍA</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 30 }}>
+              {[{ label: 'Todas', count: products.length, todas: true }, ...subcats].map((s) => {
+                const active = s.todas ? activeSub === 'todas' : normalizar(activeSub) === normalizar(s.label)
                 return (
-                  <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
-                    onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
-                    onMouseLeave={e=>e.currentTarget.style.background='#fff'}
+                  <button key={s.todas ? 'todas' : s.label} type="button"
+                    onClick={() => setActiveSub(s.todas ? 'todas' : s.label)}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+                      textAlign: 'left', height: 40, padding: '0 14px', border: 'none', borderRadius: 10,
+                      background: active ? 'var(--surface)' : 'transparent', color: 'var(--ink)',
+                      font: `${active ? '700' : '500'} 13.5px 'Instrument Sans',sans-serif`, cursor: 'pointer',
+                    }}
                   >
-                    <Link href={`/producto/${p.ID}`} style={{textDecoration:'none',display:'block'}}>
-                      <div style={{height:'180px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden',cursor:'pointer'}}>
-                        {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'contain'}} sizes="200px" /> : <span>👗</span>}
-                        {hasDiscount && <span className="badge-sale" style={{position:'absolute',top:'10px',left:'10px'}}>−{discount}%</span>}
-                        {p.Estado==='nuevo' && !hasDiscount && <span className="badge-new" style={{position:'absolute',top:'10px',left:'10px'}}>Nuevo</span>}
-                      </div>
-                    </Link>
-                    <div style={{padding:'14px'}}>
-                      <p style={{fontSize:'10px',color:'var(--light)',fontWeight:500,letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'4px'}}>{p.Subcategoria}</p>
-                      <Link href={`/producto/${p.ID}`} style={{textDecoration:'none'}}>
-                        <p style={{fontSize:'13px',fontWeight:500,color:'var(--black)',lineHeight:1.4,marginBottom:'8px',cursor:'pointer'}} className="line-clamp-2">{p.Nombre}</p>
-                      </Link>
-                      <div style={{display:'flex',alignItems:'baseline',gap:'8px',marginBottom:'10px'}}>
-                        <span style={{fontSize:'15px',fontWeight:700,color:'var(--black)'}}>S/ {price}</span>
-                        {hasDiscount && <span style={{fontSize:'11px',color:'var(--light)',textDecoration:'line-through'}}>S/ {p.Precio}</span>}
-                      </div>
-                      <div style={{display:'flex',gap:'6px'}}>
-                        <button type="button" onClick={() => addItem(p)}
-                          style={{flex:1,textAlign:'center',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',border:'none',cursor:'pointer',transition:'background .15s'}}
-                          onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
-                          onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-                        >Agregar</button>
-                        <Link href={`/producto/${p.ID}`}
-                          style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'9px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
-                          aria-label={`Ver detalle de ${p.Nombre}`}
-                        >→</Link>
-                      </div>
-                    </div>
-                  </div>
+                    <span>{s.label}</span>
+                    <span style={{ color: 'var(--muted)', fontSize: 12 }}>{s.count}</span>
+                  </button>
                 )
               })}
             </div>
-          ) : (
-            <div style={{textAlign:'center',padding:'80px',color:'var(--light)'}}>
-              <p style={{fontSize:'32px',marginBottom:'12px'}}>◎</p>
-              <p style={{fontSize:'13px',letterSpacing:'.5px'}}>No hay productos con estos filtros</p>
-            </div>
-          )}
 
-          {/* Ver más: carga progresiva para no renderizar cientos de productos de golpe */}
-          {filtered.length > visibleCount && (
-            <div style={{textAlign:'center',marginTop:'32px'}}>
-              <button type="button" className="btn-outline" onClick={() => setVisibleCount(c => c + PAGE_SIZE)}>
-                Ver más productos ({filtered.length - visibleCount} restantes)
-              </button>
-            </div>
-          )}
-        </main>
+            {sizes.length > 0 && (
+              <>
+                <div style={sideTitle}>TALLA</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 30 }}>
+                  {['todas', ...sizes].map((sz) => (
+                    <button key={sz} type="button" onClick={() => setActiveSize(sz)} style={chip(activeSize === sz)}>
+                      {sz === 'todas' ? 'Todas' : sz}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            <div style={sideTitle}>ORDENAR</div>
+            <select value={sort} onChange={(e) => setSort(e.target.value)}
+              style={{ width: '100%', height: 42, border: '1px solid var(--border-strong)', borderRadius: 10, background: '#fff', padding: '0 12px', fontSize: 13.5, color: 'var(--ink)', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="rel">Relevancia</option>
+              <option value="asc">Precio: menor a mayor</option>
+              <option value="desc">Precio: mayor a menor</option>
+              <option value="dcto">Mayor descuento</option>
+            </select>
+          </aside>
+
+          {/* Grid de productos */}
+          <div>
+            {filtered.length > 0 ? (
+              <div className="category-grid">
+                {filtered.slice(0, visibleCount).map((p) => <ProductCard key={p.ID} product={p} />)}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '90px 20px', color: 'var(--text-3)' }}>
+                <div style={{ font: "700 20px 'Archivo',sans-serif", color: 'var(--ink)', marginBottom: 8 }}>Sin resultados</div>
+                <div style={{ fontSize: 14 }}>Prueba con otra subcategoría, talla o búsqueda.</div>
+              </div>
+            )}
+
+            {filtered.length > visibleCount && (
+              <div style={{ textAlign: 'center', marginTop: 32 }}>
+                <button type="button" className="btn-outline" onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+                  Ver más productos ({filtered.length - visibleCount} restantes)
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </>
   )

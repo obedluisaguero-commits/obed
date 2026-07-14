@@ -1,14 +1,19 @@
 // lib/cart.js — Carrito de compras (estado global + persistencia en navegador)
 // El checkout es por WhatsApp: el carrito arma un solo mensaje con todo el pedido.
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+// Al agregar un producto se muestra un toast ("agregado al carrito" + VER CARRITO)
+// en vez de abrir el panel, según el rediseño.
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 
 const CartContext = createContext(null)
 const STORAGE_KEY = 'monkys_cart_v1'
+const TOAST_MS = 2600
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([])
   const [open, setOpen] = useState(false)
+  const [toast, setToast] = useState('')
   const [hydrated, setHydrated] = useState(false)
+  const toastTimer = useRef(null)
 
   // Cargar el carrito guardado al montar (solo en cliente)
   useEffect(() => {
@@ -19,6 +24,7 @@ export function CartProvider({ children }) {
       /* ignorar */
     }
     setHydrated(true)
+    return () => clearTimeout(toastTimer.current)
   }, [])
 
   // Persistir cambios
@@ -30,6 +36,17 @@ export function CartProvider({ children }) {
       /* ignorar */
     }
   }, [items, hydrated])
+
+  const showToast = useCallback((msg) => {
+    setToast(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToast(''), TOAST_MS)
+  }, [])
+
+  const clearToast = useCallback(() => {
+    clearTimeout(toastTimer.current)
+    setToast('')
+  }, [])
 
   const addItem = useCallback((product, qty = 1) => {
     setItems((prev) => {
@@ -52,8 +69,8 @@ export function CartProvider({ children }) {
         },
       ]
     })
-    setOpen(true) // abrir el carrito al agregar
-  }, [])
+    showToast(`${product.Nombre || 'Producto'} agregado al carrito`)
+  }, [showToast])
 
   const removeItem = useCallback((id) => setItems((prev) => prev.filter((i) => i.id !== id)), [])
 
@@ -76,7 +93,7 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider
-      value={{ items, count, total, addItem, removeItem, updateQty, clear, open, setOpen, hydrated }}
+      value={{ items, count, total, addItem, removeItem, updateQty, clear, open, setOpen, hydrated, toast, clearToast }}
     >
       {children}
     </CartContext.Provider>
@@ -89,15 +106,10 @@ export function useCart() {
   return ctx
 }
 
-// Arma el mensaje de WhatsApp con todo el pedido.
+// Arma el mensaje de WhatsApp con todo el pedido (formato del rediseño).
 export function buildWhatsappOrder(items, total) {
-  const lines = items.map((i, n) => {
-    const detalle = [i.talla && `Talla: ${i.talla}`, i.color].filter(Boolean).join(' · ')
-    return `${n + 1}. *${i.nombre}*${i.codigo ? ` (${i.codigo})` : ''}\n   ${
-      detalle ? detalle + ' · ' : ''
-    }Cantidad: ${i.qty} · S/ ${i.precio * i.qty}`
-  })
-  return `Hola monky's 👋 Quiero hacer este pedido:\n\n${lines.join(
-    '\n'
-  )}\n\n*Total: S/ ${total}*\n\n¿Me confirman disponibilidad y el envío?`
+  const lines = items.map(
+    (i) => `• ${i.qty} x ${i.nombre}${i.talla ? ` (Talla ${i.talla})` : ''} — S/ ${i.precio * i.qty}`
+  )
+  return `Hola Monky's Store, quiero confirmar mi pedido:\n${lines.join('\n')}\nTotal: S/ ${total}\n\n¿Me confirman disponibilidad y envío?`
 }

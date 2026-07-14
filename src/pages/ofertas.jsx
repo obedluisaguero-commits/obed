@@ -1,88 +1,64 @@
-// pages/ofertas.jsx — monky's · Premium
+// pages/ofertas.jsx — Ofertas (rediseño 2026)
 import { useState, useMemo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import Image from 'next/image'
 import { fetchOffers } from '../lib/sheets'
-import { useCart } from '../lib/cart'
+import { SITE_URL } from '../lib/config'
+import ProductCard from '../components/ProductCard'
 
 export default function OfertasPage({ offers }) {
-  const { addItem } = useCart()
   const [cat, setCat] = useState('todas')
-  const categories = useMemo(() => [...new Set(offers.map(p => p.Categoria))], [offers])
-  const filtered = cat === 'todas' ? offers : offers.filter(p => p.Categoria === cat)
+  const categories = useMemo(() => [...new Set(offers.map((p) => p.Categoria).filter(Boolean))], [offers])
+  const filtered = cat === 'todas' ? offers : offers.filter((p) => p.Categoria === cat)
 
   return (
     <>
       <Head>
         <title>Ofertas | monky&apos;s</title>
-        <meta name="description" content="Hasta 50% de descuento en ropa para mujer, hombre y niños. Ofertas por tiempo limitado en monky's." />
-        <link rel="canonical" href="https://monkysstore.pe/ofertas" />
+        <meta name="description" content="Descuentos reales en ropa para mujer, hombre y niños. Ofertas por tiempo limitado en monky's." />
+        <link rel="canonical" href={`${SITE_URL}/ofertas`} />
       </Head>
 
-      <div style={{background:'var(--black)',padding:'48px 32px',textAlign:'center'}}>
-        <p style={{fontSize:'10px',fontWeight:600,letterSpacing:'3px',textTransform:'uppercase',color:'var(--emerald-mist)',marginBottom:'14px'}}>Tiempo limitado</p>
-        <h1 style={{fontSize:'44px',fontWeight:700,letterSpacing:'-1.5px',color:'#fff',marginBottom:'8px'}}>Ofertas especiales</h1>
-        <p style={{fontSize:'13px',color:'rgba(255,255,255,.4)',fontWeight:300}}>{filtered.length} productos con descuento</p>
-      </div>
-
-      <div style={{padding:'32px'}}>
-        <div style={{display:'flex',gap:'8px',marginBottom:'32px',flexWrap:'wrap'}}>
-          {['todas',...categories].map(c => (
-            <button key={c} onClick={()=>setCat(c)} style={{
-              background: cat===c ? 'var(--black)' : 'transparent',
-              color: cat===c ? '#fff' : 'var(--mid)',
-              border: cat===c ? '1px solid var(--black)' : '1px solid var(--border)',
-              padding:'7px 18px', fontSize:'11px', fontWeight:600,
-              letterSpacing:'1px', textTransform:'uppercase', cursor:'pointer',
-            }}>{c==='todas'?'Todas':c}</button>
-          ))}
+      <div className="wrap" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Link href="/" style={{ color: 'var(--green)', textDecoration: 'none' }}>Inicio</Link>
+          <span>·</span>
+          <span>Ofertas</span>
         </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, margin: '14px 0 8px', flexWrap: 'wrap' }}>
+          <h1 style={{ font: "750 46px/1 'Archivo',sans-serif", letterSpacing: '-.02em', margin: 0, color: 'var(--ink)' }}>Ofertas</h1>
+          <span style={{ fontSize: 14.5, color: 'var(--text-3)' }}>{filtered.length} productos con descuento</span>
+        </div>
+        <div style={{ width: 44, height: 3, background: 'var(--gold)', margin: '14px 0 30px' }} />
 
-        {filtered.length > 0 ? (
-          <div className="product-grid">
-            {filtered.map(p => {
-              const discount = Math.round(((p.Precio-p.PrecioOferta)/p.Precio)*100)
+        {categories.length > 1 && (
+          <div style={{ display: 'flex', gap: 8, marginBottom: 30, flexWrap: 'wrap' }}>
+            {['todas', ...categories].map((c) => {
+              const active = cat === c
               return (
-                <div key={p.ID} style={{background:'#fff',transition:'background .15s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='var(--surface)'}
-                  onMouseLeave={e=>e.currentTarget.style.background='#fff'}
-                >
-                  <Link href={`/producto/${p.ID}`} style={{textDecoration:'none',display:'block'}}>
-                    <div style={{height:'200px',background:'var(--surface)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'40px',position:'relative',overflow:'hidden',cursor:'pointer'}}>
-                      {p.Imagen1 ? <Image src={p.Imagen1} alt={p.Nombre} fill style={{objectFit:'contain'}} sizes="25vw" /> : <span>👗</span>}
-                      <span className="badge-sale" style={{position:'absolute',top:'12px',left:'12px'}}>−{discount}%</span>
-                    </div>
-                  </Link>
-                  <div style={{padding:'14px'}}>
-                    <p style={{fontSize:'10px',color:'var(--light)',fontWeight:500,letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'4px'}}>{p.Categoria}</p>
-                    <Link href={`/producto/${p.ID}`} style={{textDecoration:'none'}}>
-                      <p style={{fontSize:'13px',fontWeight:500,color:'var(--black)',marginBottom:'8px',cursor:'pointer'}} className="line-clamp-2">{p.Nombre}</p>
-                    </Link>
-                    <div style={{display:'flex',alignItems:'baseline',gap:'8px',marginBottom:'10px'}}>
-                      <span style={{fontSize:'15px',fontWeight:700,color:'var(--black)'}}>S/ {p.PrecioOferta}</span>
-                      <span style={{fontSize:'11px',color:'var(--light)',textDecoration:'line-through'}}>S/ {p.Precio}</span>
-                    </div>
-                    <div style={{display:'flex',gap:'6px'}}>
-                      <button type="button" onClick={() => addItem(p)}
-                        style={{flex:1,textAlign:'center',padding:'9px',fontSize:'10px',fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',background:'var(--black)',color:'#fff',border:'none',cursor:'pointer',transition:'background .15s'}}
-                        onMouseEnter={e=>e.currentTarget.style.background='var(--emerald)'}
-                        onMouseLeave={e=>e.currentTarget.style.background='var(--black)'}
-                      >Agregar</button>
-                      <Link href={`/producto/${p.ID}`}
-                        style={{textDecoration:'none',background:'var(--surface)',color:'var(--mid)',border:'1px solid var(--border)',padding:'9px 12px',fontSize:'11px',display:'flex',alignItems:'center'}}
-                        aria-label={`Ver detalle de ${p.Nombre}`}
-                      >→</Link>
-                    </div>
-                  </div>
-                </div>
+                <button key={c} type="button" onClick={() => setCat(c)}
+                  style={{
+                    height: 36, padding: '0 16px', borderRadius: 99,
+                    border: `1px solid ${active ? 'var(--green)' : 'var(--border-strong)'}`,
+                    background: active ? 'var(--green)' : '#fff',
+                    color: active ? '#F5F2EA' : '#3D4C45',
+                    font: "600 12px 'Archivo',sans-serif", letterSpacing: '.06em', textTransform: 'uppercase', cursor: 'pointer',
+                  }}
+                >{c === 'todas' ? 'Todas' : c}</button>
               )
             })}
           </div>
+        )}
+
+        {filtered.length > 0 ? (
+          <div className="product-grid">
+            {filtered.map((p) => <ProductCard key={p.ID} product={p} />)}
+          </div>
         ) : (
-          <div style={{textAlign:'center',padding:'80px',color:'var(--light)'}}>
-            <p style={{fontSize:'13px',letterSpacing:'.5px'}}>No hay ofertas activas en esta categoría</p>
-            <Link href="/" style={{color:'var(--emerald)',textDecoration:'none',fontSize:'12px',marginTop:'12px',display:'inline-block'}}>← Volver al inicio</Link>
+          <div style={{ textAlign: 'center', padding: '90px 20px', color: 'var(--text-3)' }}>
+            <div style={{ font: "700 20px 'Archivo',sans-serif", color: 'var(--ink)', marginBottom: 8 }}>No hay ofertas activas</div>
+            <div style={{ fontSize: 14 }}>Vuelve pronto — publicamos descuentos cada semana.</div>
+            <Link href="/" className="btn-outline" style={{ marginTop: 22, textDecoration: 'none' }}>← Volver al inicio</Link>
           </div>
         )}
       </div>

@@ -1,4 +1,6 @@
-// pages/producto/[id].jsx — Ficha de producto individual
+// pages/producto/[id].jsx — Ficha de producto (rediseño 2026)
+// Foto 4:5 radio 22 + galería; columna derecha sticky con chips de talla/color,
+// stepper de cantidad, AGREGAR AL CARRITO y compra directa por WhatsApp.
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -6,18 +8,25 @@ import Image from 'next/image'
 import { fetchProducts, fetchProductById, fetchRelatedProducts } from '../../lib/sheets'
 import { useCart } from '../../lib/cart'
 import { safeJsonLd } from '../../lib/jsonld'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { waLink, SITE_URL } from '../../lib/config'
+import ProductCard from '../../components/ProductCard'
 
 // Normaliza la categoría a un slug sin tildes para enlazar a la ruta correcta
-// ("Niños" → "ninos"), evitando depender de una redirección 301.
 function slugCategoria(t = '') {
-  return t.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  return t.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+
+const sideTitle = { font: "600 11px 'Archivo',sans-serif", letterSpacing: '.24em', color: 'var(--text-3)', marginBottom: 12 }
+const chipOn = {
+  minWidth: 48, height: 42, padding: '0 16px', borderRadius: 10, border: '1px solid var(--green)',
+  background: 'var(--green)', color: '#F5F2EA', font: "600 12.5px 'Archivo',sans-serif", cursor: 'default',
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
 }
 
 export default function ProductPage({ product, related }) {
   const { addItem } = useCart()
   const [activeImg, setActiveImg] = useState(0)
+  const [qty, setQty] = useState(1)
   const [liveStock, setLiveStock] = useState(product.Stock)
 
   // Stock en tiempo real: refresca cada 20s contra la API interna
@@ -40,17 +49,16 @@ export default function ProductPage({ product, related }) {
   const hasDiscount = product.PrecioOferta && product.PrecioOferta < product.Precio
   const price = hasDiscount ? product.PrecioOferta : product.Precio
   const discount = hasDiscount ? Math.round(((product.Precio - product.PrecioOferta) / product.Precio) * 100) : 0
+  const out = !(liveStock > 0)
 
-  const wppMsg = encodeURIComponent(
-    `Hola monky's 👋 Quiero comprar:\n\n*${product.Nombre}*\nCódigo: ${product.Codigo}\nTalla: ${product.Talla}\nColor: ${product.Color}\nPrecio: S/ ${price}\n\n¿Me confirman disponibilidad?`
-  )
+  const buyMsg = `Hola Monky's Store, quiero comprar:\n• ${qty} x ${product.Nombre}${product.Talla ? ` (Talla ${product.Talla}${product.Color ? `, ${product.Color}` : ''})` : ''} — S/ ${price * qty}\n¿Está disponible?`
 
   return (
     <>
       <Head>
         <title>{`${product.Nombre} | monky's`}</title>
         <meta name="description" content={product.Descripcion?.slice(0, 155) || product.Nombre} />
-        <link rel="canonical" href={`https://monkysstore.pe/producto/${product.ID}`} />
+        <link rel="canonical" href={`${SITE_URL}/producto/${product.ID}`} />
         <meta property="og:title" content={product.Nombre} />
         <meta property="og:image" content={product.Imagen1} />
         <meta property="og:type" content="product" />
@@ -70,159 +78,148 @@ export default function ProductPage({ product, related }) {
                 priceCurrency: 'PEN',
                 price,
                 availability: liveStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                url: `https://monkysstore.pe/producto/${product.ID}`,
+                url: `${SITE_URL}/producto/${product.ID}`,
               },
             }),
           }}
         />
       </Head>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <nav className="text-xs text-gray-400 font-poppins mb-6 flex items-center gap-2 flex-wrap">
-          <Link href="/" className="hover:text-[#173A32]">Inicio</Link>
-          <span>/</span>
-          <Link href={`/${slugCategoria(product.Categoria)}`} className="hover:text-[#173A32] capitalize">
-            {product.Categoria}
-          </Link>
-          <span>/</span>
-          <span className="text-slate-700">{product.Nombre}</span>
-        </nav>
+      <div className="wrap" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        {/* Breadcrumb */}
+        <div style={{ fontSize: 13, color: 'var(--text-3)', display: 'flex', gap: 8, alignItems: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
+          <Link href="/" style={{ color: 'var(--green)', textDecoration: 'none' }}>Inicio</Link>
+          <span>·</span>
+          <Link href={`/${slugCategoria(product.Categoria)}`} style={{ color: 'var(--green)', textDecoration: 'none', textTransform: 'capitalize' }}>{product.Categoria}</Link>
+          <span>·</span>
+          <span className="line-clamp-1" style={{ maxWidth: 320 }}>{product.Nombre}</span>
+        </div>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="prod-grid">
           {/* Galería */}
           <div>
-            <div className="relative h-96 bg-gradient-to-br from-[#F5F2EA] to-[#E9DFC9] rounded-2xl overflow-hidden mb-3">
+            <div style={{ position: 'relative', aspectRatio: '4/5', borderRadius: 22, overflow: 'hidden', background: 'var(--surface)' }}>
               {images.length > 0 ? (
-                <Image src={images[activeImg]} alt={product.Nombre} fill className="object-contain" sizes="(max-width:768px) 100vw, 50vw" />
+                <Image src={images[activeImg]} alt={product.Nombre} fill style={{ objectFit: 'contain' }} sizes="(max-width:900px) 100vw, 50vw" priority />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-6xl">👗</div>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 12px 'Archivo',sans-serif", letterSpacing: '.14em', color: 'var(--muted)' }}>FOTO</div>
               )}
               {hasDiscount && (
-                <span className="absolute top-3 left-3 bg-[#173A32] text-white text-xs font-bold font-poppins px-3 py-1 rounded-full">
-                  -{discount}% OFF
-                </span>
+                <span className="badge-sale" style={{ position: 'absolute', top: 16, left: 16, fontSize: 13, padding: '6px 12px', pointerEvents: 'none' }}>−{discount}%</span>
               )}
             </div>
             {images.length > 1 && (
-              <div className="flex gap-2">
+              <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
                 {images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImg(i)}
-                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 ${
-                      activeImg === i ? 'border-[#C99A3C]' : 'border-transparent'
-                    }`}
+                  <button key={i} type="button" onClick={() => setActiveImg(i)} aria-label={`Foto ${i + 1}`}
+                    style={{
+                      position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', cursor: 'pointer',
+                      background: 'var(--surface)', border: `2px solid ${activeImg === i ? 'var(--gold)' : 'transparent'}`,
+                    }}
                   >
-                    <Image src={img} alt={`${product.Nombre} ${i + 1}`} fill className="object-contain" sizes="80px" />
+                    <Image src={img} alt={`${product.Nombre} ${i + 1}`} fill style={{ objectFit: 'contain' }} sizes="76px" />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Info */}
-          <div>
-            <p className="text-xs text-[#173A32] font-poppins uppercase tracking-wide font-medium mb-2">
-              {product.Categoria} · {product.Subcategoria} {product.Marca && `· ${product.Marca}`}
-            </p>
-            <h1 className="font-playfair text-3xl font-bold text-slate-900 mb-3">{product.Nombre}</h1>
+          {/* Info sticky */}
+          <div className="prod-sticky">
+            <div style={{ font: "600 11px 'Archivo',sans-serif", letterSpacing: '.24em', color: 'var(--gold)', textTransform: 'uppercase' }}>
+              {product.Subcategoria || product.Categoria}{product.Marca ? ` · ${product.Marca}` : ''}
+            </div>
+            <h1 style={{ font: "750 36px/1.15 'Archivo',sans-serif", letterSpacing: '-.02em', margin: '10px 0 14px', color: 'var(--ink)' }}>{product.Nombre}</h1>
 
-            <div className="flex items-center gap-1.5 mb-4">
-              <span className={`w-2 h-2 rounded-full ${liveStock > 0 ? 'bg-green-500' : 'bg-red-400'}`} />
-              <span className={`text-sm font-poppins ${liveStock > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                {liveStock > 0 ? 'Disponible' : 'Sin stock por el momento'}
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: out ? 'var(--sale)' : 'var(--ok)', marginBottom: 18 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 99, background: out ? 'var(--sale)' : 'var(--ok)', display: 'inline-block' }} />
+              {out ? 'Sin stock por el momento' : 'Disponible · stock en tiempo real'}
             </div>
 
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-3xl font-bold text-[#C99A3C] font-poppins">S/ {price}</span>
-              {hasDiscount && <span className="text-lg text-gray-400 line-through font-poppins">S/ {product.Precio}</span>}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 26 }}>
+              <span style={{ font: "750 34px 'Archivo',sans-serif", color: 'var(--ink)' }}>S/ {price}</span>
+              {hasDiscount && (
+                <>
+                  <span style={{ fontSize: 17, color: 'var(--muted)', textDecoration: 'line-through' }}>S/ {product.Precio}</span>
+                  <span style={{ font: "700 13px 'Archivo',sans-serif", color: 'var(--sale)' }}>−{discount}%</span>
+                </>
+              )}
             </div>
 
             {product.Descripcion && (
-              <p className="text-gray-600 text-sm leading-relaxed mb-6">{product.Descripcion}</p>
+              <p style={{ fontSize: 15, lineHeight: 1.65, color: 'var(--text-2)', margin: '0 0 26px', maxWidth: 460 }}>{product.Descripcion}</p>
             )}
 
-            <div className="flex gap-3 mb-6 flex-wrap">
-              {product.Talla && (
-                <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-2">
-                  <p className="text-[10px] text-gray-400 font-poppins uppercase">Talla</p>
-                  <p className="text-sm font-medium text-slate-700 font-poppins">{product.Talla}</p>
+            {product.Talla && (
+              <>
+                <div style={sideTitle}>TALLA</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9, marginBottom: 24 }}>
+                  <span style={chipOn}>{product.Talla}</span>
                 </div>
-              )}
-              {product.Color && (
-                <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-2">
-                  <p className="text-[10px] text-gray-400 font-poppins uppercase">Color</p>
-                  <p className="text-sm font-medium text-slate-700 font-poppins">{product.Color}</p>
+              </>
+            )}
+            {product.Color && (
+              <>
+                <div style={sideTitle}>COLOR</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9, marginBottom: 24 }}>
+                  <span style={{ ...chipOn, minWidth: 0, fontFamily: "'Instrument Sans',sans-serif" }}>{product.Color}</span>
                 </div>
-              )}
-              <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-2">
-                <p className="text-[10px] text-gray-400 font-poppins uppercase">Código</p>
-                <p className="text-sm font-medium text-slate-700 font-poppins">{product.Codigo}</p>
-              </div>
+              </>
+            )}
+            <div style={{ marginBottom: 6 }}>
+              <span style={{ fontSize: 12.5, color: 'var(--text-3)' }}>Código: {product.Codigo}</span>
             </div>
 
-            {liveStock > 0 ? (
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => addItem({ ...product, Stock: liveStock })}
-                  className="block w-full text-center font-poppins font-semibold py-3.5 rounded-full transition-colors bg-[#173A32] text-white hover:bg-[#0F2A24]"
-                >
-                  🛒 Agregar al carrito
-                </button>
-                <a
-                  href={`https://wa.me/${WPP_NUMBER}?text=${wppMsg}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center font-poppins font-semibold py-3 rounded-full transition-colors border border-[#173A32] text-[#173A32] hover:bg-[#E9F0EC]"
-                >
-                  💬 Comprar ahora por WhatsApp
-                </a>
+            {/* Cantidad + agregar */}
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', margin: '18px 0 14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(16,36,29,.16)', borderRadius: 99, height: 52, background: '#fff' }}>
+                <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Menos"
+                  style={{ width: 44, height: '100%', border: 'none', background: 'none', fontSize: 18, color: 'var(--ink)', cursor: 'pointer' }}>−</button>
+                <span style={{ minWidth: 28, textAlign: 'center', font: "700 15px 'Archivo',sans-serif" }}>{qty}</span>
+                <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="Más"
+                  style={{ width: 44, height: '100%', border: 'none', background: 'none', fontSize: 18, color: 'var(--ink)', cursor: 'pointer' }}>+</button>
               </div>
-            ) : (
-              <div className="block text-center font-poppins font-semibold py-3.5 rounded-full bg-gray-100 text-gray-400">
-                Sin stock disponible
-              </div>
-            )}
+              <button type="button" className="btn-primary" disabled={out}
+                style={{ flex: 1, height: 52, opacity: out ? .5 : 1, cursor: out ? 'default' : 'pointer' }}
+                onClick={() => { if (!out) addItem({ ...product, Stock: liveStock }, qty) }}
+              >
+                {out ? 'Sin stock' : 'Agregar al carrito'}
+              </button>
+            </div>
+            <a href={out ? undefined : waLink(buyMsg)} target="_blank" rel="noopener noreferrer" className="btn-outline"
+              style={{ width: '100%', height: 52, textDecoration: 'none', pointerEvents: out ? 'none' : 'auto', opacity: out ? .5 : 1 }}
+            >
+              Comprar ahora por WhatsApp
+            </a>
 
-            <div className="flex gap-4 mt-5 text-xs text-gray-400 font-poppins">
-              <span>🚚 Envíos a todo Perú</span>
-              <span>🔄 Cambios en 7 días</span>
+            {/* Info de envíos/cambios */}
+            <div style={{ marginTop: 30, borderTop: '1px solid rgba(16,36,29,.1)' }}>
+              <div style={{ display: 'flex', gap: 13, padding: '16px 0', borderBottom: '1px solid rgba(16,36,29,.1)' }}>
+                <span style={{ color: 'var(--gold)' }}>→</span>
+                <div>
+                  <div style={{ font: "600 13.5px 'Instrument Sans',sans-serif" }}>Envíos a todo Perú</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--text-3)', marginTop: 2 }}>Entrega en 24–72h según región</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 13, padding: '16px 0' }}>
+                <span style={{ color: 'var(--gold)' }}>→</span>
+                <div>
+                  <div style={{ font: "600 13.5px 'Instrument Sans',sans-serif" }}>Cambios en 7 días</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--text-3)', marginTop: 2 }}>Sin costo adicional · <Link href="/politica-de-cambios" style={{ color: 'var(--green)' }}>ver política</Link></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Relacionados */}
         {related.length > 0 && (
-          <section className="mt-16">
-            <h2 className="font-playfair text-2xl font-bold text-slate-900 mb-6">También te puede interesar</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-              {related.map((p) => {
-                const rHasDiscount = p.PrecioOferta && p.PrecioOferta < p.Precio
-                const rPrice = rHasDiscount ? p.PrecioOferta : p.Precio
-                return (
-                  <Link
-                    key={p.ID}
-                    href={`/producto/${p.ID}`}
-                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#9FB5AC] hover:shadow-lg transition-all"
-                  >
-                    <div className="relative h-40 bg-gradient-to-br from-[#F5F2EA] to-[#E9DFC9]">
-                      {p.Imagen1 ? (
-                        <Image src={p.Imagen1} alt={p.Nombre} fill className="object-contain" sizes="200px" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-3xl">👗</div>
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <p className="text-xs text-slate-700 font-medium line-clamp-1 mb-1">{p.Nombre}</p>
-                      <p className="text-sm font-bold text-[#C99A3C] font-poppins">S/ {rPrice}</p>
-                    </div>
-                  </Link>
-                )
-              })}
+          <div style={{ marginTop: 70 }}>
+            <h2 style={{ font: "750 28px 'Archivo',sans-serif", letterSpacing: '-.01em', margin: '0 0 24px', color: 'var(--ink)' }}>También te puede gustar</h2>
+            <div className="product-grid">
+              {related.map((p) => <ProductCard key={p.ID} product={p} />)}
             </div>
-          </section>
+          </div>
         )}
       </div>
     </>
@@ -236,7 +233,7 @@ export async function getStaticPaths() {
     return { paths, fallback: 'blocking' } // el resto se genera bajo demanda (ISR)
   } catch (err) {
     console.error('Error fetching products for paths:', err)
-    return { paths: [], fallback: 'blocking' } // todo se genera bajo demanda si Sheets falla en build
+    return { paths: [], fallback: 'blocking' }
   }
 }
 

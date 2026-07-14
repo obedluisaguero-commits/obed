@@ -1,7 +1,6 @@
 // pages/contacto.jsx — monky's · Premium
 import Head from 'next/head'
-
-const WPP_NUMBER = process.env.NEXT_PUBLIC_WPP_NUMBER || '51999999999'
+import { WPP_NUMBER, WPP_DISPLAY } from '../lib/config'
 
 export default function ContactoPage() {
   return (
@@ -20,7 +19,7 @@ export default function ContactoPage() {
 
         <div className="grid-3-sep" style={{marginBottom:'40px'}}>
           {[
-            { icon:'◉', label:'WhatsApp', detail:'+51 999 999 999', href:`https://wa.me/${WPP_NUMBER}` },
+            { icon:'◉', label:'WhatsApp', detail: WPP_DISPLAY, href:`https://wa.me/${WPP_NUMBER}` },
             { icon:'◈', label:'Instagram', detail:'@monkysstore', href:'https://instagram.com/monkysstore' },
             { icon:'◎', label:'Tienda', detail:'Huancayo, Junín', href:'#' },
           ].map(c => (
