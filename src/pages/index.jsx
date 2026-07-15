@@ -113,7 +113,7 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
               <Image src="/monkys-avatar.svg" alt="monky&apos;s STORE" width={210} height={210} priority />
             </div>
             <div style={{ position: 'absolute', top: 18, right: 18, background: 'rgba(11,46,35,.85)', backdropFilter: 'blur(6px)', color: '#F5F2EA', border: '1px solid rgba(245,242,234,.15)', borderRadius: 99, padding: '9px 16px', font: "600 12px 'Archivo',sans-serif", letterSpacing: '.06em', pointerEvents: 'none' }}>
-              Stock en tiempo real
+              Envíos a todo el Perú
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
             ['↗', 'Envíos a todo Perú', 'Todas las regiones'],
             ['◈', 'Pagos seguros', 'Yape · Plin · Transferencia'],
             ['↺', 'Cambios en 7 días', 'Sin costo adicional'],
-            ['●', 'Stock en tiempo real', 'Disponibilidad actualizada'],
+            ['●', 'Atención personalizada', 'Te asesoramos por WhatsApp'],
           ].map(([glyph, title, sub]) => (
             <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
               <div style={{ width: 38, height: 38, borderRadius: 99, background: 'var(--surface-2)', color: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Archivo',sans-serif", flex: 'none' }}>{glyph}</div>

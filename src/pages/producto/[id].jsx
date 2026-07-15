@@ -133,7 +133,7 @@ export default function ProductPage({ product, related }) {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: out ? 'var(--sale)' : 'var(--ok)', marginBottom: 18 }}>
               <span style={{ width: 8, height: 8, borderRadius: 99, background: out ? 'var(--sale)' : 'var(--ok)', display: 'inline-block' }} />
-              {out ? 'Sin stock por el momento' : 'Disponible · stock en tiempo real'}
+              {out ? 'Sin stock por el momento' : 'Disponible'}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 26 }}>
