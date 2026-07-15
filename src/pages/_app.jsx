@@ -177,7 +177,7 @@ function Footer() {
             </div>
           </div>
           <p style={{ fontSize: 13.5, lineHeight: 1.65, margin: '0 0 18px', maxWidth: 280 }}>
-            Moda para toda tu familia. Calidad peruana, estilo internacional, precios competitivos.
+            Moda para toda tu familia. Estilo internacional y precios competitivos.
           </p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {['Yape', 'Plin', 'Transferencia'].map((p) => (

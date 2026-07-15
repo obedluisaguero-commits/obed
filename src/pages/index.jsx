@@ -77,7 +77,7 @@ export default function Home({ featuredProducts = [], offersCount = 0, maxDiscou
               Moda para<br /><span style={{ color: 'var(--gold-light)' }}>toda tu familia</span>
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: 'rgba(245,242,234,.72)', maxWidth: 440, margin: '22px 0 34px' }}>
-              Ropa moderna, cómoda y a precios competitivos. Calidad peruana, estilo internacional.
+              Ropa moderna, cómoda y a precios competitivos. Estilo internacional para toda la familia.
             </p>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
               <Link href="/mujer" style={{ height: 52, padding: '0 30px', borderRadius: 99, background: '#F5F2EA', color: 'var(--green)', font: "700 13px 'Archivo',sans-serif", letterSpacing: '.1em', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
