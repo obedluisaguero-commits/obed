@@ -12,13 +12,13 @@ export const WPP_DISPLAY = `+${WPP_NUMBER.slice(0, 2)} ${WPP_NUMBER.slice(2)}`
 
 // ─── Foto de cada categoría en el inicio ───────────────────────────────
 // Elige QUÉ producto representa a cada categoría en las tarjetas del inicio.
-// Pon el ID del producto (columna "ID" de tu Google Sheet) cuya foto quieras
-// mostrar. Si lo dejas vacío ('') o el ID no existe, se usa automáticamente
-// la foto del primer producto de esa categoría.
-//   Ejemplo: mujer: '12'  →  la tarjeta "Mujer" mostrará la foto del producto 12
+// Puedes poner el CÓDIGO del producto (columna "Nombre", ej. 'Ves-090') o su
+// ID numérico (columna "ID", ej. '12'). Si lo dejas vacío ('') o no existe,
+// se usa automáticamente la foto del primer producto de esa categoría.
+//   Ejemplo: mujer: 'Ves-090'  →  la tarjeta "Mujer" mostrará esa foto
 export const CATEGORY_HERO_PRODUCT = {
-  mujer:  '',   // ID del producto para la tarjeta "Mujer"
-  hombre: '',   // ID del producto para la tarjeta "Hombre"
-  ninos:  '',   // ID del producto para la tarjeta "Niños"
-  otros:  '',   // ID del producto para la tarjeta "Otros"
+  mujer:  '',   // código o ID del producto para la tarjeta "Mujer"
+  hombre: '',   // código o ID del producto para la tarjeta "Hombre"
+  ninos:  '',   // código o ID del producto para la tarjeta "Niños"
+  otros:  '',   // código o ID del producto para la tarjeta "Otros"
 }

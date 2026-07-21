@@ -261,10 +261,12 @@ export async function getStaticProps() {
     // 2) Si no, se usa la foto del primer producto visible de esa categoría.
     const slugDe = (cat = '') => cat.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     const catImages = {}
-    // Paso 1: productos elegidos manualmente en la configuración
-    for (const [slug, id] of Object.entries(CATEGORY_HERO_PRODUCT)) {
-      if (!id) continue
-      const elegido = visibles.find((p) => String(p.ID) === String(id))
+    // Paso 1: productos elegidos manualmente (por código "Nombre" o por ID)
+    const norm = (v = '') => v.toString().trim().toLowerCase()
+    for (const [slug, ref] of Object.entries(CATEGORY_HERO_PRODUCT)) {
+      if (!ref) continue
+      const buscado = norm(ref)
+      const elegido = visibles.find((p) => norm(p.ID) === buscado || norm(p.Nombre) === buscado)
       if (elegido && elegido.Imagen1) catImages[slug] = elegido.Imagen1
     }
     // Paso 2: relleno automático para categorías sin foto elegida
