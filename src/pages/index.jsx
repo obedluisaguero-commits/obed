@@ -266,7 +266,9 @@ export async function getStaticProps() {
     for (const [slug, ref] of Object.entries(CATEGORY_HERO_PRODUCT)) {
       if (!ref) continue
       const buscado = norm(ref)
-      const elegido = visibles.find((p) => norm(p.ID) === buscado || norm(p.Nombre) === buscado)
+      const elegido = visibles.find(
+        (p) => norm(p.Codigo) === buscado || norm(p.ID) === buscado || norm(p.Nombre) === buscado
+      )
       if (elegido && elegido.Imagen1) catImages[slug] = elegido.Imagen1
     }
     // Paso 2: relleno automático para categorías sin foto elegida

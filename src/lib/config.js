@@ -12,13 +12,13 @@ export const WPP_DISPLAY = `+${WPP_NUMBER.slice(0, 2)} ${WPP_NUMBER.slice(2)}`
 
 // ─── Foto de cada categoría en el inicio ───────────────────────────────
 // Elige QUÉ producto representa a cada categoría en las tarjetas del inicio.
-// Puedes poner el CÓDIGO del producto (columna "Nombre", ej. 'Ves-090') o su
-// ID numérico (columna "ID", ej. '12'). Si lo dejas vacío ('') o no existe,
+// Puedes poner el CÓDIGO del producto (columna "Codigo", ej. 'Ves-0252Y') o su
+// ID numérico (columna "ID", ej. '252'). Si lo dejas vacío ('') o no existe,
 // se usa automáticamente la foto del primer producto de esa categoría.
-//   Ejemplo: mujer: 'Ves-090'  →  la tarjeta "Mujer" mostrará esa foto
+//   Ejemplo: mujer: 'Ves-0252Y'  →  la tarjeta "Mujer" mostrará esa foto
 export const CATEGORY_HERO_PRODUCT = {
-  mujer:  '',   // código o ID del producto para la tarjeta "Mujer"
-  hombre: '',   // código o ID del producto para la tarjeta "Hombre"
-  ninos:  '',   // código o ID del producto para la tarjeta "Niños"
-  otros:  '',   // código o ID del producto para la tarjeta "Otros"
+  mujer:  'Ves-0252Y',   // Vestido elegante de canalé elástico cepillado
+  hombre: 'Cas-0344R',   // Casaca piel de tiburón
+  ninos:  'Con-0130R',   // Conjunto Niña
+  otros:  'Aud-0378Y',   // ATTACK SHARK L80 Pro
 }
