@@ -7,7 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { fetchProducts } from '../lib/sheets'
 import { safeJsonLd } from '../lib/jsonld'
-import { waLink, SITE_URL } from '../lib/config'
+import { waLink, SITE_URL, CATEGORY_HERO_PRODUCT } from '../lib/config'
 import ProductCard from '../components/ProductCard'
 
 const SEO = {
@@ -256,9 +256,18 @@ export async function getStaticProps() {
       return d > max ? d : max
     }, 0)
 
-    // Foto representativa por categoría (primer producto visible con imagen)
+    // Foto representativa por categoría.
+    // 1) Si en config.js elegiste un producto (CATEGORY_HERO_PRODUCT), se usa su foto.
+    // 2) Si no, se usa la foto del primer producto visible de esa categoría.
     const slugDe = (cat = '') => cat.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     const catImages = {}
+    // Paso 1: productos elegidos manualmente en la configuración
+    for (const [slug, id] of Object.entries(CATEGORY_HERO_PRODUCT)) {
+      if (!id) continue
+      const elegido = visibles.find((p) => String(p.ID) === String(id))
+      if (elegido && elegido.Imagen1) catImages[slug] = elegido.Imagen1
+    }
+    // Paso 2: relleno automático para categorías sin foto elegida
     for (const p of visibles) {
       const slug = slugDe(p.Categoria)
       if (p.Imagen1 && !catImages[slug]) catImages[slug] = p.Imagen1
