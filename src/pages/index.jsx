@@ -261,12 +261,14 @@ export async function getStaticProps() {
     // 2) Si no, se usa la foto del primer producto visible de esa categoría.
     const slugDe = (cat = '') => cat.toString().trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     const catImages = {}
-    // Paso 1: productos elegidos manualmente (por código "Nombre" o por ID)
+    // Paso 1: productos elegidos manualmente (por código, ID o nombre).
+    // Se busca entre TODOS los productos —no solo los activos— para que la foto
+    // elegida siga como portada de la categoría aunque el producto se agote o venda.
     const norm = (v = '') => v.toString().trim().toLowerCase()
     for (const [slug, ref] of Object.entries(CATEGORY_HERO_PRODUCT)) {
       if (!ref) continue
       const buscado = norm(ref)
-      const elegido = visibles.find(
+      const elegido = products.find(
         (p) => norm(p.Codigo) === buscado || norm(p.ID) === buscado || norm(p.Nombre) === buscado
       )
       if (elegido && elegido.Imagen1) catImages[slug] = elegido.Imagen1
